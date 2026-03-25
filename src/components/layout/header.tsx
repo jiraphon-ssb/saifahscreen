@@ -49,9 +49,9 @@ const moreLinks = [
 
 function TopHeader() {
     return (
-        <div className="hidden md:block bg-black border-b border-gray-800">
-            <div className="container flex items-center justify-between h-10 text-xs text-gray-300">
-                <p>SAIFAH: บริการออกแบบและผลิตเสื้อครบวงจร</p>
+        <div className="hidden md:block bg-muted/40 border-b border-border/50 transition-colors">
+            <div className="container flex items-center justify-between h-10 text-xs text-muted-foreground font-medium">
+                <p className="tracking-wide">SAIFAH: บริการออกแบบและผลิตเสื้อครบวงจร</p>
                 <div className="flex items-center gap-4">
                     {socialLinks.map((social) => (
                         <Link 
@@ -59,7 +59,7 @@ function TopHeader() {
                             href={social.href} 
                             target="_blank" 
                             rel="noopener noreferrer" 
-                            className="text-gray-300 hover:text-primary transition-colors" 
+                            className="text-muted-foreground hover:text-primary transition-colors hover:scale-110 duration-300" 
                             prefetch={false}
                         >
                             <social.icon className="h-4 w-4" />
@@ -75,7 +75,7 @@ function TopHeader() {
 export default function Header() {
   return (
     <header
-      className="w-full bg-background/95 backdrop-blur-sm z-50 sticky top-0"
+      className="w-full bg-background/80 backdrop-blur-xl z-50 sticky top-0 border-b border-border/40 shadow-[0_4px_30px_rgba(0,0,0,0.05)] transition-all duration-500 supports-[backdrop-filter]:bg-background/60"
     >
       <TopHeader />
       <div className="container flex h-20 items-center">
@@ -111,9 +111,9 @@ export default function Header() {
                 </div>
             </div>
             
-            <nav className="hidden md:flex items-center gap-x-1 text-sm font-medium">
+            <nav className="hidden md:flex items-center gap-x-2 text-sm font-medium">
                 {navLinks.map(link => (
-                    <Button key={link.href} variant="ghost" asChild className="text-base hover:bg-accent data-[state=open]:bg-accent">
+                    <Button key={link.href} variant="ghost" asChild className="text-base font-medium hover:bg-primary/10 hover:text-primary transition-all duration-300 data-[state=open]:bg-primary/10 rounded-full px-5">
                         <Link href={link.href}>
                             {link.label}
                         </Link>
@@ -122,19 +122,19 @@ export default function Header() {
                 
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" className="text-base hover:bg-accent data-[state=open]:bg-accent">
+                        <Button variant="ghost" className="text-base font-medium hover:bg-primary/10 hover:text-primary transition-all duration-300 data-[state=open]:bg-primary/10 rounded-full px-5">
                             ข้อมูลเพิ่มเติม
                             <ChevronDown className="ml-1 h-4 w-4" />
                         </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent>
+                    <DropdownMenuContent className="rounded-xl shadow-xl border-border/50 bg-background/95 backdrop-blur-xl">
                         {moreLinks.map(link => (
-                            <DropdownMenuItem key={link.href} asChild><Link href={link.href}>{link.label}</Link></DropdownMenuItem>
+                            <DropdownMenuItem key={link.href} asChild className="hover:bg-primary/10 focus:bg-primary/10 cursor-pointer transition-colors"><Link href={link.href}>{link.label}</Link></DropdownMenuItem>
                         ))}
                     </DropdownMenuContent>
                 </DropdownMenu>
 
-                <Button variant="ghost" asChild className="text-base hover:bg-accent data-[state=open]:bg-accent">
+                <Button variant="default" asChild className="text-base font-semibold transition-all duration-300 rounded-full px-6 shadow-lg shadow-primary/20 hover:shadow-primary/40 hover:-translate-y-0.5 ml-2">
                     <Link href="/contact">
                         ติดต่อเรา
                     </Link>

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useCallback, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { X } from 'lucide-react';
 import Link from 'next/link';
 
@@ -15,8 +15,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import CanvasArea from "./canvas-area";
 import MainToolbar from './main-toolbar';
 import EditorPanel from './editor-panel';
-import { useUser, useFirestore, useDoc, useMemoFirebase } from '@/firebase';
-import { doc } from 'firebase/firestore';
+import LZString from 'lz-string';
 
 export type DesignElement = {
   id: string;
@@ -95,43 +94,44 @@ interface DesignToolProps {
 export default function DesignTool({ designId }: DesignToolProps) {
   const router = useRouter();
   const { toast } = useToast();
-  
-  const { user } = useUser();
-  const firestore = useFirestore();
+  const searchParams = useSearchParams();
 
   const [selectedElementId, setSelectedElementId] = useState<string | null>(null);
   const [activeTool, setActiveTool] = useState<ActiveTool>('Product');
   const [isMobilePanelOpen, setMobilePanelOpen] = useState(false);
   
-  const [designState, setDesignState, undo, redo, canUndo, canRedo, setHistory] = useHistory<DesignState>(initialDesignState);
+  const [designState, setDesignState, undo, redo, canUndo, canRedo] = useHistory<DesignState>(initialDesignState);
 
-  // Fetch existing design
-  const designRef = useMemoFirebase(() => {
-    if (!designId || !user || !firestore) return null;
-    return doc(firestore, `users/${user.uid}/designs`, designId);
-  }, [designId, user, firestore]);
-  
-  const { data: fetchedDesign, isLoading: isLoadingDesign } = useDoc<any>(designRef);
+  // Removed Firebase design fetching logic
 
   useEffect(() => {
-    if (fetchedDesign) {
+    const dataParam = searchParams.get('data');
+    if (dataParam) {
       try {
-        const elements = JSON.parse(fetchedDesign.designConfiguration);
-        const productConfig = fetchedDesign.productConfiguration;
-        if (Array.isArray(elements) && productConfig) {
-           const newDesignState = { productConfig, elements };
-           setHistory({ history: [newDesignState], index: 0 });
+        const decompressed = LZString.decompressFromEncodedURIComponent(dataParam);
+        if (decompressed) {
+            const fetchedDesign = JSON.parse(decompressed);
+            if (fetchedDesign) {
+              const elements = typeof fetchedDesign.designConfiguration === 'string' 
+                ? JSON.parse(fetchedDesign.designConfiguration) 
+                : fetchedDesign.designConfiguration;
+              const productConfig = fetchedDesign.productConfiguration;
+              if (Array.isArray(elements) && productConfig) {
+                 const newDesignState = { productConfig, elements };
+                 setDesignState(newDesignState, true);
+              }
+            }
         }
       } catch (e) {
-        console.error("Failed to load design:", e);
+        console.error("Failed to load design from URL:", e);
         toast({
           variant: 'destructive',
           title: 'ไม่สามารถโหลดดีไซน์ได้',
-          description: 'เกิดข้อผิดพลาดในการอ่านข้อมูลดีไซน์เก่า'
-        })
+          description: 'ลิงก์ข้อมูลไม่ถูกต้องหรือเสียหาย'
+        });
       }
     }
-  }, [fetchedDesign, setHistory, toast]);
+  }, [searchParams, setDesignState, toast]);
   
   const handleToolSelectForMobile = (tool: ActiveTool) => {
     setActiveTool(tool);

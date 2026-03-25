@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import LZString from 'lz-string';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -15,15 +16,13 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { useUser, useFirestore } from '@/firebase';
-import { doc, collection, serverTimestamp } from 'firebase/firestore';
-import { setDocumentNonBlocking } from '@/firebase/non-blocking-updates';
+
 import type { DesignElement, ProductConfiguration } from './design-tool';
 import { Loader2, Minus, Plus, FileText, Tag, Printer } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 import DesignPreview from '../../account/designs/design-preview';
-import { getPricePerItem, PRICE_PER_EXTRA_SPOT } from '@/data/pricing';
+import { getPricePerItem, PRICE_PER_EXTRA_SPOT } from '@/lib/pricing';
 
 interface GenerateSummaryDialogProps {
   children: React.ReactNode;
@@ -51,8 +50,6 @@ export default function GenerateSummaryDialog({
   const [quantities, setQuantities] = useState<{ [key: string]: number }>({});
   const [isGenerating, setIsGenerating] = useState(false);
   const { toast } = useToast();
-  const { user } = useUser();
-  const firestore = useFirestore();
   const router = useRouter();
 
   useEffect(() => {
@@ -88,7 +85,7 @@ export default function GenerateSummaryDialog({
 
   const totalQuantity = Object.values(quantities).reduce((sum, qty) => sum + qty, 0);
 
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     if (!designName) {
       toast({ variant: 'destructive', title: 'กรุณาตั้งชื่อดีไซน์ของคุณ' });
       return;
@@ -97,47 +94,42 @@ export default function GenerateSummaryDialog({
       toast({ variant: 'destructive', title: 'กรุณาเพิ่มสินค้าอย่างน้อย 1 ชิ้น' });
       return;
     }
-    if (!user || !firestore) {
-      toast({ variant: 'destructive', title: 'คุณต้องเข้าสู่ระบบเพื่อสร้างสรุปออเดอร์' });
-      return;
-    }
 
     setIsGenerating(true);
     
     const firstImage = elements.find((el) => el.type === 'image' && el.url);
     const previewImageUrl = firstImage?.url || productConfig.tshirt.imageUrl;
     
-    const docRef = designId 
-        ? doc(firestore, 'users', user.uid, 'designs', designId)
-        : doc(collection(firestore, 'users', user.uid, 'designs'));
-    
-    const newDesignId = docRef.id;
-
-    const designData: any = {
-        userId: user.uid,
+    const designData = {
         productId: `${productConfig.productType}-tshirt`,
         name: designName,
         previewImageUrl: previewImageUrl,
-        designConfiguration: JSON.stringify(elements),
+        designConfiguration: elements,
         productConfiguration: productConfig,
         quantities: quantities,
-        updatedAt: serverTimestamp(),
     };
     
-    if (!designId) {
-        designData.createdAt = serverTimestamp();
+    try {
+      const compressed = LZString.compressToEncodedURIComponent(JSON.stringify(designData));
+
+      toast({
+          title: 'สำเร็จ!',
+          description: `กำลังสร้างสรุปสำหรับดีไซน์ '${designName}'...`,
+      });
+      
+      onOpenChange(false);
+      setIsGenerating(false);
+      router.push(`/summary?data=${compressed}`);
+
+    } catch (err) {
+      console.error(err);
+      toast({
+          variant: 'destructive',
+          title: 'เกิดข้อผิดพลาด',
+          description: 'ไม่สามารถบีบอัดข้อมูลได้',
+      });
+      setIsGenerating(false);
     }
-
-    setDocumentNonBlocking(docRef, designData, { merge: true });
-
-    toast({
-        title: 'บันทึกดีไซน์สำเร็จ!',
-        description: `กำลังสร้างสรุปสำหรับดีไซน์ '${designName}'...`,
-    });
-    
-    onOpenChange(false);
-    setIsGenerating(false);
-    router.push(`/summary/${newDesignId}`);
   };
   
   const handleOpenChange = (isOpen: boolean) => {

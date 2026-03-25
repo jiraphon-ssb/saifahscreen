@@ -82,14 +82,14 @@ export default function Home() {
         name: 'Premium Cotton T-shirt',
         description: 'เสื้อยืดคอตตอน 100% (C32 Comb) คุณภาพพรีเมียม ทรงสวย ใส่สบาย เหมาะกับทุกโอกาส',
         features: ['Cotton from USA', 'ผ้านุ่มพิเศษ ไม่ร้อน', 'อยู่ทรงสวย ไม่หด ไม่ย้วย', 'งานสกรีนคุณภาพสูง'],
-        image: 'https://img2.pic.in.th/Artboard-1431b87429f93275c8.md.png',
+        image: '/images/product-premium-cotton.png',
         colors: ['#FFFFFF', '#E1D7C6', '#A9A9A9', '#5A3E33', '#212121', '#1a2a44']
     },
     {
         name: 'Oversize Cotton T-shirt',
         description: 'เสื้อยืดทรงโอเวอร์ไซส์ (C20 Comb) สไตล์สตรีท ผลิตจากผ้าคอตตอนคุณภาพดีเยี่ยม',
         features: ['Cotton from USA', 'ผ้าหนา อยู่ทรงสวย', 'ใส่ได้ทั้งชายและหญิง', 'สกรีนพรีเมียม ติดทนทาน'],
-        image: 'https://img5.pic.in.th/file/secure-sv1/Artboard-13a166493001a1f5f1.md.png',
+        image: '/images/product-oversize-cotton.png',
         colors: ['#FFFFFF', '#212121']
     }
   ];
@@ -123,8 +123,8 @@ export default function Home() {
                             </CarouselItem>
                         ))}
                     </CarouselContent>
-                    <CarouselPrevious className="absolute left-4 top-1/2 -translate-y-1/2 z-30 bg-primary/80 text-primary-foreground hover:bg-primary opacity-0 group-hover:opacity-100 transition-opacity" />
-                    <CarouselNext className="absolute right-4 top-1/2 -translate-y-1/2 z-30 bg-primary/80 text-primary-foreground hover:bg-primary opacity-0 group-hover:opacity-100 transition-opacity" />
+                    <CarouselPrevious className="absolute left-4 top-1/2 -translate-y-1/2 z-30 bg-background/20 backdrop-blur-md border border-white/20 text-white hover:bg-background/40 hover:text-white hover:scale-110 opacity-0 group-hover:opacity-100 transition-all duration-300" />
+                    <CarouselNext className="absolute right-4 top-1/2 -translate-y-1/2 z-30 bg-background/20 backdrop-blur-md border border-white/20 text-white hover:bg-background/40 hover:text-white hover:scale-110 opacity-0 group-hover:opacity-100 transition-all duration-300" />
                 </Carousel>
                  <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-30 flex items-center gap-2">
                     {Array.from({ length: desktopCount }).map((_, index) => (
@@ -157,8 +157,8 @@ export default function Home() {
                             </CarouselItem>
                         ))}
                     </CarouselContent>
-                    <CarouselPrevious className="absolute left-2 top-1/2 -translate-y-1/2 z-30 bg-primary/80 text-primary-foreground hover:bg-primary opacity-0 group-hover:opacity-100 transition-opacity" />
-                    <CarouselNext className="absolute right-2 top-1/2 -translate-y-1/2 z-30 bg-primary/80 text-primary-foreground hover:bg-primary opacity-0 group-hover:opacity-100 transition-opacity" />
+                    <CarouselPrevious className="absolute left-2 top-1/2 -translate-y-1/2 z-30 bg-background/20 backdrop-blur-md border border-white/20 text-white hover:bg-background/40 hover:text-white opacity-0 group-hover:opacity-100 transition-all duration-300" />
+                    <CarouselNext className="absolute right-2 top-1/2 -translate-y-1/2 z-30 bg-background/20 backdrop-blur-md border border-white/20 text-white hover:bg-background/40 hover:text-white opacity-0 group-hover:opacity-100 transition-all duration-300" />
                 </Carousel>
                  <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-30 flex items-center gap-2">
                     {Array.from({ length: mobileCount }).map((_, index) => (
@@ -178,8 +178,8 @@ export default function Home() {
                 </AnimateOnScroll>
                 <div className="max-w-5xl mx-auto grid gap-8 sm:grid-cols-3">
                     {howItWorksSteps.map((step, index) => (
-                        <AnimateOnScroll key={step.title} delay={200 + index * 150} className="flex flex-col items-center text-center p-4">
-                            <div className="flex h-20 w-20 items-center justify-center rounded-full bg-primary/10 mb-6">
+                        <AnimateOnScroll key={step.title} delay={200 + index * 150} className="flex flex-col items-center text-center p-6 group rounded-2xl hover:bg-primary/5 transition-colors duration-500">
+                            <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-gradient-to-br from-primary/20 to-primary/5 mb-6 group-hover:animate-float shadow-lg shadow-primary/10">
                                 {renderIcon(step.iconName, { className: "h-10 w-10 text-primary" })}
                             </div>
                             <h3 className="text-xl font-bold font-headline mb-2">{step.title}</h3>
@@ -201,12 +201,13 @@ export default function Home() {
                 <div className="mx-auto grid gap-6 md:grid-cols-2 lg:grid-cols-3 max-w-6xl">
                     {whySaifahFeatures.map((feature, index) => (
                         <AnimateOnScroll key={feature.title} delay={200 + index * 100}>
-                            <Card className="bg-card h-full p-6 flex flex-col items-center text-center hover:border-primary/50 hover:shadow-lg hover:-translate-y-1.5 transition-all">
-                                <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 mb-4">
+                            <Card className="bg-card h-full p-6 flex flex-col items-center text-center border border-border hover:border-primary/50 hover:shadow-2xl hover:shadow-primary/10 hover:-translate-y-2 transition-all duration-500 relative overflow-hidden group">
+                                <div className="absolute inset-0 bg-gradient-to-b from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                                <div className="relative flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-primary/20 to-primary/5 mb-4 group-hover:scale-110 transition-transform duration-500 shadow-md">
                                     {renderIcon(feature.iconName, { className: "h-8 w-8 text-primary" })}
                                 </div>
-                                <h3 className='font-headline text-xl font-bold'>{feature.title}</h3>
-                                <p className="text-muted-foreground text-sm mt-2 flex-1">{feature.description}</p>
+                                <h3 className='font-headline text-xl font-bold relative z-10'>{feature.title}</h3>
+                                <p className="text-muted-foreground text-sm mt-2 flex-1 relative z-10">{feature.description}</p>
                             </Card>
                         </AnimateOnScroll>
                     ))}
@@ -225,15 +226,16 @@ export default function Home() {
                 <div className="max-w-5xl mx-auto grid gap-8 md:grid-cols-2">
                     {products.map((product, index) => (
                         <AnimateOnScroll key={product.name} delay={200 + index * 150}>
-                            <Card className="overflow-hidden transition-all duration-300 hover:shadow-xl group bg-background">
-                                <div className="relative aspect-square overflow-hidden">
+                            <Card className="overflow-hidden transition-all duration-500 hover:shadow-2xl hover:shadow-primary/20 group bg-card border-border hover:border-primary/40 relative">
+                                <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-0" />
+                                <div className="relative aspect-[4/3] overflow-hidden bg-muted/30 p-6 flex items-center justify-center z-10">
                                     <img 
                                         src={product.image}
                                         alt={product.name}
-                                        className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
+                                        className="object-contain w-full h-full transition-all duration-700 ease-out group-hover:scale-110 group-hover:-translate-y-2 drop-shadow-xl"
                                     />
                                 </div>
-                                <CardContent className="p-6">
+                                <CardContent className="p-6 relative z-10 bg-card border-t border-border/50">
                                     <CardTitle className="font-headline text-2xl">{product.name}</CardTitle>
                                     <div className='pt-4'>
                                         <h4 className='text-sm font-semibold mb-2'>สีที่มีให้เลือก:</h4>
@@ -263,11 +265,12 @@ export default function Home() {
                 <div className="grid lg:grid-cols-2 gap-12 items-center max-w-6xl mx-auto">
                     {/* Image Column */}
                     <AnimateOnScroll delay={200} className="relative aspect-square w-full max-w-md mx-auto group">
+                         <div className="absolute inset-0 bg-primary/20 rounded-full blur-[100px] group-hover:bg-primary/30 transition-colors duration-700 -z-10" />
                          {careGuideImage && <img
                             src={careGuideImage.imageUrl}
                             alt={careGuideImage.description}
                             data-ai-hint={careGuideImage.imageHint}
-                            className="w-full h-full object-contain transition-transform duration-500 ease-in-out group-hover:scale-105 group-hover:drop-shadow-lg"
+                            className="w-full h-full object-contain transition-transform duration-700 ease-out group-hover:scale-110 group-hover:drop-shadow-2xl animate-float"
                          />}
                     </AnimateOnScroll>
 

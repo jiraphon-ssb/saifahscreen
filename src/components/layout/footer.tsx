@@ -24,18 +24,19 @@ const mainLinks = [
 
 export default function Footer() {
   return (
-    <footer className="bg-black text-gray-400">
-      <div className="container mx-auto px-4 py-10 md:px-6">
+    <footer className="bg-card text-muted-foreground border-t border-border/50 relative overflow-hidden">
+      <div className="absolute inset-0 bg-primary/2 pointer-events-none" />
+      <div className="container mx-auto px-4 py-10 md:px-6 relative z-10">
 
         <div className="flex flex-col items-center text-center">
             <Link href="/" className="mb-4">
                 <img
-                    src="https://img5.pic.in.th/file/secure-sv1/Asset-161f5ecc1195413109e.png"
+                    src="/images/logo-footer.png"
                     alt="SAIFAH Footer Logo"
                     className="h-12 w-auto transition-transform hover:scale-105"
                 />
             </Link>
-            <p className="max-w-md text-sm text-gray-500">
+            <p className="max-w-md text-sm text-muted-foreground">
               พลังแห่งสายฟ้าในงานสกรีนและเสื้อ Print-on-Demand สร้างสรรค์เสื้อที่เป็นเอกลักษณ์ของคุณได้อย่างง่ายดาย
             </p>
         </div>
@@ -45,7 +46,7 @@ export default function Footer() {
                 <Link 
                     key={link.label}
                     href={link.href}
-                    className="text-sm font-medium text-gray-400 hover:text-primary transition-colors"
+                    className="text-sm font-medium text-muted-foreground hover:text-primary transition-all hover:-translate-y-0.5"
                     prefetch={false}
                 >
                     {link.label}
@@ -53,10 +54,10 @@ export default function Footer() {
             ))}
         </div>
 
-        <Separator className="my-8 bg-gray-800" />
+        <Separator className="my-8 bg-border/50" />
         
         <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-             <p className="text-xs text-gray-600 text-center md:text-left order-2 md:order-1">
+             <p className="text-xs text-muted-foreground/80 text-center md:text-left order-2 md:order-1">
                 © {new Date().getFullYear()} SAIFAH Screen. All rights reserved.
             </p>
             <div className="flex items-center gap-5 order-1 md:order-2">
@@ -66,7 +67,7 @@ export default function Footer() {
                         href={social.href} 
                         target="_blank" 
                         rel="noopener noreferrer" 
-                        className="text-gray-500 hover:text-primary hover:scale-110 transition-all duration-300"
+                        className="text-muted-foreground/80 hover:text-primary hover:scale-110 transition-all duration-300"
                         prefetch={false}
                     >
                         <social.icon className="h-5 w-5" />

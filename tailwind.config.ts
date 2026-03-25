@@ -17,8 +17,8 @@ export default {
     },
     extend: {
       fontFamily: {
-        body: ['Prompt', 'sans-serif'],
-        headline: ['Prompt', 'sans-serif'],
+        body: ['Inter', 'Prompt', 'sans-serif'],
+        headline: ['Space Grotesk', 'Prompt', 'sans-serif'],
         code: ['monospace'],
       },
       colors: {
@@ -104,13 +104,23 @@ export default {
             transform: 'translateY(0) scale(1)'
           }
         },
+        'float': {
+          '0%, 100%': { transform: 'translateY(0)' },
+          '50%': { transform: 'translateY(-10px)' },
+        },
+        'pulse-glow': {
+          '0%, 100%': { opacity: '1', transform: 'scale(1)' },
+          '50%': { opacity: '.8', transform: 'scale(1.05)' },
+        }
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
         'scroll-left': 'scroll-left 80s linear infinite',
         'gradient': 'gradient 15s ease infinite',
-        'fade-in-up': 'fade-in-up 0.8s cubic-bezier(0.215, 0.610, 0.355, 1.000) forwards'
+        'fade-in-up': 'fade-in-up 0.8s cubic-bezier(0.215, 0.610, 0.355, 1.000) forwards',
+        'float': 'float 6s ease-in-out infinite',
+        'pulse-glow': 'pulse-glow 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
       },
     },
   },

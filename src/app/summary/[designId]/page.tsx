@@ -1,9 +1,8 @@
 'use client';
 
-import { useUser, useFirestore, useDoc, useMemoFirebase } from '@/firebase';
-import { doc } from 'firebase/firestore';
+
 import { useParams, useRouter } from 'next/navigation';
-import { useMemo, useRef, useState } from 'react';
+import { useMemo, useRef, useState, useEffect } from 'react';
 import html2canvas from 'html2canvas';
 import { Loader2, Package, Download, Palette, Ruler, Tag, Printer, Image as ImageIcon, Type } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
@@ -20,8 +19,6 @@ import Logo from '@/components/icons/logo';
 import { getPricePerItem, PRICE_PER_EXTRA_SPOT } from '@/lib/pricing';
 
 export default function SummaryPage() {
-  const { user, isUserLoading } = useUser();
-  const firestore = useFirestore();
   const router = useRouter();
   const params = useParams();
   const { toast } = useToast();
@@ -30,12 +27,22 @@ export default function SummaryPage() {
   const [isDownloading, setIsDownloading] = useState(false);
   const summaryRef = useRef<HTMLDivElement>(null);
 
-  const designRef = useMemoFirebase(() => {
-    if (!user || !firestore || !designId) return null;
-    return doc(firestore, `users/${user.uid}/designs`, designId);
-  }, [user, firestore, designId]);
+  const [design, setDesign] = useState<any>(null);
+  const [isLoadingDesign, setIsLoadingDesign] = useState(true);
 
-  const { data: design, isLoading: isLoadingDesign } = useDoc<any>(designRef);
+  useEffect(() => {
+    if (!designId) return;
+    fetch(`/api/designs/${designId}`)
+      .then(res => res.json())
+      .then(data => {
+         setDesign(data.design || data);
+         setIsLoadingDesign(false);
+      })
+      .catch(err => {
+         console.error(err);
+         setIsLoadingDesign(false);
+      });
+  }, [designId]);
 
   const elements: DesignElement[] = useMemo(() => {
     try {
@@ -90,7 +97,7 @@ export default function SummaryPage() {
       window.open(lineUrl, '_blank');
   }
 
-  if (isUserLoading || isLoadingDesign) {
+  if (isLoadingDesign) {
     return (
       <div className="flex items-center justify-center min-h-[calc(100vh-8rem)]">
         <Loader2 className="h-8 w-8 animate-spin" />
@@ -170,7 +177,7 @@ export default function SummaryPage() {
                         <h3 className="font-headline text-xl font-bold mt-4">{design.name}</h3>
                         <p className="text-muted-foreground capitalize">{config.productType} T-Shirt - {config.tshirt.name}</p>
                         <p className="text-xs text-muted-foreground pt-2">
-                           สร้างเมื่อ: {design.createdAt?.toDate().toLocaleDateString('th-TH', { day: 'numeric', month: 'short', year: 'numeric'})}
+                           สร้างเมื่อ: {design.createdAt ? new Date(design.createdAt).toLocaleDateString('th-TH', { day: 'numeric', month: 'short', year: 'numeric'}) : ''}
                         </p>
                     </div>
 
