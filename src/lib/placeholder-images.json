@@ -1,0 +1,228 @@
+{
+  "placeholderImages": [
+    {
+      "id": "hero-background",
+      "description": "Abstract background for hero section",
+      "imageUrl": "https://img2.pic.in.th/Asset-111.png",
+      "imageHint": "abstract background"
+    },
+    {
+      "id": "carousel-desktop-1",
+      "description": "Desktop carousel image 1",
+      "imageUrl": "https://img2.pic.in.th/Artboard-5abcc8efe4fba7fa8.png",
+      "imageHint": "t-shirt carousel"
+    },
+    {
+      "id": "carousel-desktop-2",
+      "description": "Desktop carousel image 2",
+      "imageUrl": "https://img5.pic.in.th/file/secure-sv1/Artboard-109ff6e856ac9dc32.png",
+      "imageHint": "hoodie carousel"
+    },
+    {
+      "id": "carousel-desktop-3",
+      "description": "Desktop carousel image 3",
+      "imageUrl": "https://img5.pic.in.th/file/secure-sv1/Artboard-319eaa8874fdccd5b.png",
+      "imageHint": "polo carousel"
+    },
+    {
+      "id": "carousel-mobile-1",
+      "description": "Mobile carousel image 1",
+      "imageUrl": "https://img5.pic.in.th/file/secure-sv1/Artboard-63cb3ee55fc98c2d2.png",
+      "imageHint": "t-shirt service"
+    },
+    {
+      "id": "carousel-mobile-2",
+      "description": "Mobile carousel image 2",
+      "imageUrl": "https://img2.pic.in.th/Artboard-24b6ce3991f44e335.png",
+      "imageHint": "design service"
+    },
+    {
+      "id": "carousel-mobile-3",
+      "description": "Mobile carousel image 3",
+      "imageUrl": "https://img2.pic.in.th/Artboard-4b4a59361c552a315.png",
+      "imageHint": "delivery service"
+    },
+    {
+      "id": "t-shirt-mockup-white-saifah",
+      "description": "SAIFAH White T-shirt mockup",
+      "imageUrl": "https://img5.pic.in.th/file/secure-sv1/Asset-861.md.png",
+      "imageHint": "white t-shirt mockup"
+    },
+    {
+      "id": "t-shirt-mockup-black-saifah",
+      "description": "SAIFAH Black T-shirt mockup",
+      "imageUrl": "https://img5.pic.in.th/file/secure-sv1/Asset-851.md.png",
+      "imageHint": "black t-shirt mockup"
+    },
+    {
+      "id": "t-shirt-mockup-grey-saifah",
+      "description": "SAIFAH Grey T-shirt mockup",
+      "imageUrl": "https://img5.pic.in.th/file/secure-sv1/Asset-841.md.png",
+      "imageHint": "grey t-shirt mockup"
+    },
+    {
+      "id": "t-shirt-mockup-navy-saifah",
+      "description": "SAIFAH Navy T-shirt mockup",
+      "imageUrl": "https://img2.pic.in.th/Asset-831.md.png",
+      "imageHint": "navy t-shirt mockup"
+    },
+    {
+      "id": "t-shirt-mockup-beige-saifah",
+      "description": "SAIFAH Beige T-shirt mockup",
+      "imageUrl": "https://img2.pic.in.th/Asset-801.md.png",
+      "imageHint": "beige t-shirt mockup"
+    },
+    {
+      "id": "t-shirt-mockup-cream-saifah",
+      "description": "SAIFAH Cream T-shirt mockup",
+      "imageUrl": "https://img2.pic.in.th/Asset-821.md.png",
+      "imageHint": "cream t-shirt mockup"
+    },
+    {
+      "id": "t-shirt-mockup-chocolate-saifah",
+      "description": "SAIFAH Chocolate T-shirt mockup",
+      "imageUrl": "https://img5.pic.in.th/file/secure-sv1/Asset-811.md.png",
+      "imageHint": "chocolate t-shirt mockup"
+    },
+    {
+      "id": "care-guide-tshirt",
+      "description": "T-shirt for care guide section",
+      "imageUrl": "https://img5.pic.in.th/file/secure-sv1/Asset-101.md.png",
+      "imageHint": "t-shirt mockup"
+    },
+    {
+      "id": "how-to-design-hero",
+      "description": "A person using a design tool on a large screen",
+      "imageUrl": "https://picsum.photos/seed/design-guide/1200/600",
+      "imageHint": "design process"
+    },
+    {
+      "id": "portfolio-1",
+      "description": "Gold and brown polo shirt",
+      "imageUrl": "https://picsum.photos/seed/p1/400/400",
+      "imageHint": "polo shirt",
+      "category": "company",
+      "name": "PrachPreaw"
+    },
+    {
+      "id": "portfolio-2",
+      "description": "Pink and white polo shirt",
+      "imageUrl": "https://picsum.photos/seed/p2/400/400",
+      "imageHint": "pink polo",
+      "category": "event",
+      "name": "Maple Leaf"
+    },
+    {
+      "id": "portfolio-3",
+      "description": "Black and yellow basketball jersey",
+      "imageUrl": "https://picsum.photos/seed/p3/400/400",
+      "imageHint": "basketball jersey",
+      "category": "other",
+      "name": "T.M.T Kasetmall"
+    },
+    {
+      "id": "portfolio-4",
+      "description": "Dark blue volunteer t-shirt",
+      "imageUrl": "https://picsum.photos/seed/p4/400/400",
+      "imageHint": "volunteer shirt",
+      "category": "organization",
+      "name": "Volunteer"
+    },
+    {
+      "id": "portfolio-5",
+      "description": "Green and black virtual run shirt",
+      "imageUrl": "https://picsum.photos/seed/p5/400/400",
+      "imageHint": "running shirt",
+      "category": "organization",
+      "name": "DOAE Virtual Run"
+    },
+    {
+      "id": "portfolio-6",
+      "description": "Green and yellow polo",
+      "imageUrl": "https://picsum.photos/seed/p6/400/400",
+      "imageHint": "green polo",
+      "category": "company",
+      "name": "Green Power"
+    },
+    {
+      "id": "portfolio-7",
+      "description": "Striped abstract jersey",
+      "imageUrl": "https://picsum.photos/seed/p7/400/400",
+      "imageHint": "abstract jersey",
+      "category": "other",
+      "name": "STORM Nation"
+    },
+    {
+      "id": "portfolio-8",
+      "description": "Black pro shop polo",
+      "imageUrl": "https://picsum.photos/seed/p8/400/400",
+      "imageHint": "black polo",
+      "category": "company",
+      "name": "DARK Proshop"
+    },
+    {
+      "id": "portfolio-9",
+      "description": "Red university faculty shirt",
+      "imageUrl": "https://picsum.photos/seed/p9/400/400",
+      "imageHint": "university shirt",
+      "category": "university",
+      "name": "Faculty of Arts"
+    },
+    {
+      "id": "portfolio-10",
+      "description": "Blue corporate event polo",
+      "imageUrl": "https://picsum.photos/seed/p10/400/400",
+      "imageHint": "corporate polo",
+      "category": "company",
+      "name": "Innovate Corp"
+    },
+    {
+      "id": "portfolio-11",
+      "description": "High school sports day shirt",
+      "imageUrl": "https://picsum.photos/seed/p11/400/400",
+      "imageHint": "sports day",
+      "category": "university",
+      "name": "High School Champs"
+    },
+    {
+      "id": "portfolio-12",
+      "description": "E-sports team jersey",
+      "imageUrl": "https://picsum.photos/seed/p12/400/400",
+      "imageHint": "esports jersey",
+      "category": "other",
+      "name": "Pixel Predators"
+    },
+    {
+      "id": "portfolio-13",
+      "description": "Charity run event t-shirt",
+      "imageUrl": "https://picsum.photos/seed/p13/400/400",
+      "imageHint": "charity run",
+      "category": "event",
+      "name": "Run for Hope"
+    },
+    {
+      "id": "portfolio-14",
+      "description": "Official football club jersey",
+      "imageUrl": "https://picsum.photos/seed/p14/400/400",
+      "imageHint": "football jersey",
+      "category": "other",
+      "name": "City Strikers FC"
+    },
+    {
+      "id": "portfolio-15",
+      "description": "Tech company staff polo",
+      "imageUrl": "https://picsum.photos/seed/p15/400/400",
+      "imageHint": "tech polo",
+      "category": "sme",
+      "name": "NextGen Solutions"
+    },
+    {
+      "id": "portfolio-16",
+      "description": "Music festival staff t-shirt",
+      "imageUrl": "https://picsum.photos/seed/p16/400/400",
+      "imageHint": "music festival",
+      "category": "event",
+      "name": "Soundwave Fest"
+    }
+  ]
+}
