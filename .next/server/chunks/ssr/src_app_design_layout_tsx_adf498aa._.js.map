@@ -1,0 +1,6 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 4, "column": 0}, "map": {"version":3,"sources":["file:///Users/artist/Documents/GitHub/saifahscreen/src/app/design/layout.tsx"],"sourcesContent":["import type { Metadata } from \"next\";\n\nexport const metadata: Metadata = {\n  title: \"เครื่องมือออกแบบ\",\n  description: \"สร้างสรรค์ผลงานชิ้นใหม่ หรือแก้ไขดีไซน์ที่คุณบันทึกไว้\",\n};\n\nexport default function DesignLayout({\n  children,\n}: Readonly<{\n  children: React.ReactNode;\n}>) {\n  // This layout is for the design tool. It inherits the root layout.\n  return <>{children}</>;\n}\n"],"names":[],"mappings":";;;;;;;;AAEO,MAAM,WAAqB;IAChC,OAAO;IACP,aAAa;AACf;AAEe,SAAS,aAAa,EACnC,QAAQ,EAGR;IACA,mEAAmE;IACnE,qBAAO;kBAAG;;AACZ","debugId":null}}]
+}

@@ -1,0 +1,6 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 4, "column": 0}, "map": {"version":3,"sources":["file:///Users/artist/Documents/GitHub/saifahscreen/src/app/how-to-design/layout.tsx"],"sourcesContent":["import type { Metadata } from \"next\";\n\nexport const metadata: Metadata = {\n  title: \"วิธีการใช้งานระบบออกแบบ\",\n  description: \"เรียนรู้วิธีการใช้เครื่องมือออกแบบเสื้อของ SAIFAH từngขั้นตอน\",\n};\n\nexport default function HowToDesignLayout({\n  children,\n}: Readonly<{\n  children: React.ReactNode;\n}>) {\n  return <>{children}</>;\n}\n"],"names":[],"mappings":";;;;;;;;AAEO,MAAM,WAAqB;IAChC,OAAO;IACP,aAAa;AACf;AAEe,SAAS,kBAAkB,EACxC,QAAQ,EAGR;IACA,qBAAO;kBAAG;;AACZ","debugId":null}}]
+}
