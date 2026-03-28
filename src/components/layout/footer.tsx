@@ -3,6 +3,7 @@ import { Facebook, Instagram, Youtube } from 'lucide-react';
 import LineIcon from '../icons/line-icon';
 import TiktokIcon from '../icons/tiktok-icon';
 import { Separator } from '../ui/separator';
+import Logo from '../icons/logo';
 
 const socialLinks = [
     { href: "https://www.facebook.com/saifahscreen", icon: Facebook, label: "Facebook" },
@@ -30,11 +31,7 @@ export default function Footer() {
 
         <div className="flex flex-col items-center text-center">
             <Link href="/" className="mb-4">
-                <img
-                    src="/images/logo-footer.png"
-                    alt="SAIFAH Footer Logo"
-                    className="h-12 w-auto transition-transform hover:scale-105"
-                />
+                <Logo className="h-12 w-auto transition-transform hover:scale-105" />
             </Link>
             <p className="max-w-md text-sm text-muted-foreground">
               พลังแห่งสายฟ้าในงานสกรีนและเสื้อ Print-on-Demand สร้างสรรค์เสื้อที่เป็นเอกลักษณ์ของคุณได้อย่างง่ายดาย

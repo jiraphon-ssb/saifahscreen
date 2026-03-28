@@ -11,63 +11,78 @@ interface MainToolbarProps {
   selectedElementId: string | null;
 }
 
-const tools = [
-  { id: 'Product', icon: Shirt, label: 'สินค้า', requiresSelection: false },
-  { id: 'Elements', icon: PlusSquare, label: 'เพิ่ม', requiresSelection: false },
-  { id: 'Layers', icon: Layers, label: 'เลเยอร์', requiresSelection: false },
-  { id: 'Inspector', icon: SlidersHorizontal, label: 'แก้ไข', requiresSelection: true },
-] as const;
+interface ToolItem {
+  id: ActiveTool;
+  icon: React.ComponentType<{ className?: string }>;
+  label: string;
+  needsSelection?: boolean;
+}
+
+const tools: ToolItem[] = [
+  { id: 'Product', icon: Shirt, label: 'เลือกสินค้า' },
+  { id: 'Elements', icon: PlusSquare, label: 'เพิ่มองค์ประกอบ' },
+  { id: 'Layers', icon: Layers, label: 'จัดการเลเยอร์' },
+  { id: 'Inspector', icon: SlidersHorizontal, label: 'แก้ไขคุณสมบัติ', needsSelection: true },
+];
 
 export default function MainToolbar({ activeTool, setActiveTool, selectedElementId }: MainToolbarProps) {
-
-  const renderToolButton = (tool: typeof tools[number], isMobile = false) => {
-    const isDisabled = tool.requiresSelection && !selectedElementId;
-    
-    const button = (
-        <Button
-          variant={activeTool === tool.id && !isMobile ? 'secondary' : 'ghost'}
-          size="icon"
-          className={isMobile 
-            ? "h-full w-full flex-col gap-1 text-xs rounded-lg whitespace-normal leading-tight py-2"
-            : "h-16 w-16 flex-col gap-1 text-xs"
-          }
-          onClick={() => setActiveTool(tool.id)}
-          disabled={isDisabled}
-          data-state={activeTool === tool.id ? 'active' : 'inactive'}
-        >
-          <tool.icon className="h-5 w-5" />
-          <span>{tool.label}</span>
-        </Button>
-    );
-
-    if (isMobile) {
-        return button;
-    }
-
-    return (
-        <Tooltip key={tool.id}>
-            <TooltipTrigger asChild>{button}</TooltipTrigger>
-            <TooltipContent side="right"><p>{tool.label}</p></TooltipContent>
-        </Tooltip>
-    )
-  }
-  
   return (
     <>
-        {/* Desktop Toolbar */}
-        <aside className="hidden md:flex h-full w-[80px] shrink-0 flex-col items-center gap-2 border-r border-border/50 bg-card p-2">
-            <TooltipProvider delayDuration={0}>
-                {tools.map(tool => renderToolButton(tool))}
+        <aside className="hidden md:flex h-full w-16 shrink-0 flex-col items-center gap-1 border-r border-border/50 bg-background py-3">
+            <TooltipProvider delayDuration={300}>
+                {tools.map((tool) => {
+                    const isActive = activeTool === tool.id;
+                    const isDisabled = tool.needsSelection && !selectedElementId;
+                    
+                    return (
+                        <Tooltip key={tool.id}>
+                            <TooltipTrigger asChild>
+                                <Button
+                                  variant="ghost"
+                                  className={`h-14 w-14 flex-col gap-1 text-xs rounded-xl transition-all ${
+                                    isActive 
+                                      ? 'bg-primary/10 text-primary hover:bg-primary/20' 
+                                      : 'text-muted-foreground hover:text-foreground hover:bg-secondary'
+                                  }`}
+                                  onClick={() => !isDisabled && setActiveTool(tool.id)}
+                                  disabled={isDisabled}
+                                >
+                                  <tool.icon className="h-5 w-5" />
+                                  <span className="text-[10px] leading-tight">{tool.label.split(' ')[0]}</span>
+                                </Button>
+                            </TooltipTrigger>
+                            <TooltipContent side="right">
+                                <p>{tool.label}</p>
+                                {tool.needsSelection && <p className="text-xs text-muted-foreground">(เลือกองค์ประกอบก่อน)</p>}
+                            </TooltipContent>
+                        </Tooltip>
+                    );
+                })}
             </TooltipProvider>
         </aside>
 
-        {/* Mobile Toolbar */}
-        <aside className="md:hidden flex h-20 w-full shrink-0 items-stretch border-t bg-card p-1 gap-1">
-            {tools.map(tool => (
-              <div key={tool.id} className="flex-1">
-                {renderToolButton(tool, true)}
-              </div>
-            ))}
+        <aside className="md:hidden flex h-16 w-full shrink-0 items-stretch border-t border-border bg-background px-2 py-2 gap-1">
+            {tools.map((tool) => {
+                const isActive = activeTool === tool.id;
+                const isDisabled = tool.needsSelection && !selectedElementId;
+                
+                return (
+                    <Button
+                      key={tool.id}
+                      variant="ghost"
+                      className={`flex-1 flex-col gap-0.5 text-[10px] rounded-lg ${
+                        isActive 
+                          ? 'bg-primary/10 text-primary' 
+                          : 'text-muted-foreground'
+                      }`}
+                      onClick={() => !isDisabled && setActiveTool(tool.id)}
+                      disabled={isDisabled}
+                    >
+                        <tool.icon className="h-5 w-5" />
+                        <span className="leading-tight">{tool.label.split(' ')[0]}</span>
+                    </Button>
+                );
+            })}
         </aside>
     </>
   );

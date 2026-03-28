@@ -3,7 +3,6 @@
 import { useState, useRef, useEffect } from 'react';
 import CanvasPreview from './canvas-preview';
 import type { DesignElement } from './design-tool';
-import CanvasToolbar from './canvas-toolbar';
 import ZoomControls from './zoom-controls';
 
 interface CanvasAreaProps {
@@ -31,7 +30,7 @@ export default function CanvasArea({
 }: CanvasAreaProps) {
   const [zoom, setZoom] = useState(1);
   const containerRef = useRef<HTMLDivElement>(null);
-  const [canvasContainerSize, setCanvasContainerSize] = useState(600);
+  const [canvasContainerSize, setCanvasContainerSize] = useState(500);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -39,28 +38,29 @@ export default function CanvasArea({
 
     const observer = new ResizeObserver(() => {
       const { width, height } = container.getBoundingClientRect();
-      // Use 90% of the smallest dimension for padding, but don't exceed the original 600px
-      const newSize = Math.min(width * 0.9, height * 0.9, 600);
+      const newSize = Math.min(width * 0.85, height * 0.9, 550);
       setCanvasContainerSize(newSize);
     });
 
     observer.observe(container);
     
-    // Set initial size
     const { width, height } = container.getBoundingClientRect();
-    const newSize = Math.min(width * 0.9, height * 0.9, 600);
+    const newSize = Math.min(width * 0.85, height * 0.9, 550);
     setCanvasContainerSize(newSize);
 
     return () => observer.disconnect();
   }, []);
 
   return (
-    <main ref={containerRef} className="relative flex-1 overflow-hidden bg-muted/70">
-      <div className="absolute inset-0 bg-background/0 bg-[linear-gradient(to_right,hsl(var(--foreground)/0.03)_1px,transparent_1px),linear-gradient(to_bottom,hsl(var(--foreground)/0.03)_1px,transparent_1px)] bg-[size:20px_20px]"></div>
+    <main ref={containerRef} className="relative flex-1 overflow-hidden bg-secondary">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,hsl(var(--primary)/0.03)_1px,transparent_1px)] bg-[size:24px_24px]" />
 
-      <div className="absolute inset-0 flex items-center justify-center p-2">
-        <div style={{ transform: `scale(${zoom})` }} className="transition-transform duration-200">
-          <div style={{ width: canvasContainerSize, height: canvasContainerSize }} className="relative">
+      <div className="absolute inset-0 flex items-center justify-center p-4">
+        <div style={{ transform: `scale(${zoom})` }} className="transition-transform duration-200 ease-out">
+          <div 
+            style={{ width: canvasContainerSize, height: canvasContainerSize }} 
+            className="relative shadow-2xl shadow-black/5 rounded-lg overflow-hidden bg-white"
+          >
             <CanvasPreview
               elements={elements}
               imageUrl={imageUrl}
@@ -73,7 +73,6 @@ export default function CanvasArea({
         </div>
       </div>
 
-      <CanvasToolbar undo={undo} redo={redo} canUndo={canUndo} canRedo={canRedo} />
       <ZoomControls scale={zoom} setScale={setZoom} />
     </main>
   );

@@ -21,7 +21,7 @@ import type { DesignElement, ProductConfiguration } from './design-tool';
 import { Loader2, Minus, Plus, FileText, Tag, Printer } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
-import DesignPreview from '../../account/designs/design-preview';
+import DesignPreview from '@/components/design-preview';
 import { getPricePerItem, PRICE_PER_EXTRA_SPOT } from '@/lib/pricing';
 
 interface GenerateSummaryDialogProps {

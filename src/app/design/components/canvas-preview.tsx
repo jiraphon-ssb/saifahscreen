@@ -109,7 +109,7 @@ export default function CanvasPreview({
                   y: position.y / scale,
                 });
               }}
-              onClick={(e) => handleElementClick(e, element.id)}
+              onClick={(e: React.MouseEvent) => handleElementClick(e, element.id)}
               className={cn(
                 "group/element outline-none",
                 isSelected && 'border-2 border-dashed border-primary z-20'

@@ -49,17 +49,17 @@ const moreLinks = [
 
 function TopHeader() {
     return (
-        <div className="hidden md:block bg-muted/40 border-b border-border/50 transition-colors">
-            <div className="container flex items-center justify-between h-10 text-xs text-muted-foreground font-medium">
+        <div className="hidden lg:block bg-secondary/50 border-b border-border/30 transition-colors">
+            <div className="container flex items-center justify-between h-9 text-xs text-muted-foreground font-medium">
                 <p className="tracking-wide">SAIFAH: บริการออกแบบและผลิตเสื้อครบวงจร</p>
-                <div className="flex items-center gap-4">
-                    {socialLinks.map((social) => (
+                <div className="flex items-center gap-3">
+                    {socialLinks.slice(0, 4).map((social) => (
                         <Link 
                             key={social.label}
                             href={social.href} 
                             target="_blank" 
                             rel="noopener noreferrer" 
-                            className="text-muted-foreground hover:text-primary transition-colors hover:scale-110 duration-300" 
+                            className="text-muted-foreground hover:text-primary transition-colors" 
                             prefetch={false}
                         >
                             <social.icon className="h-4 w-4" />
@@ -75,45 +75,40 @@ function TopHeader() {
 export default function Header() {
   return (
     <header
-      className="w-full bg-background/80 backdrop-blur-xl z-50 sticky top-0 border-b border-border/40 shadow-[0_4px_30px_rgba(0,0,0,0.05)] transition-all duration-500 supports-[backdrop-filter]:bg-background/60"
+      className="w-full bg-background/95 backdrop-blur-md z-50 sticky top-0 border-b border-border/30 shadow-[0_1px_3px_rgba(0,0,0,0.03)] transition-all duration-300"
     >
       <TopHeader />
-      <div className="container flex h-20 items-center">
-          {/* --- Desktop Layout --- */}
-          <div className="hidden md:flex flex-1 items-center justify-between gap-8">
-            <div className="flex items-center gap-2">
+      <div className="container flex h-16 items-center">
+          <div className="hidden lg:flex flex-1 items-center justify-between">
+            <div className="flex items-center gap-3">
                 <Link href="/" className="flex items-center gap-2 shrink-0">
-                    <Logo className="h-10 w-auto" />
-                    <Separator orientation="vertical" className="h-8" />
+                    <Logo className="h-9 w-auto" />
                 </Link>
-                <p className="ml-2 text-sm text-muted-foreground whitespace-nowrap">Welcome to SAIFAH Screen</p>
-                
-                <div className="ml-4">
-                    <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                            <Button 
-                              size="sm" 
-                              className="text-xs font-bold group bg-primary data-[state=open]:bg-primary/90 text-primary-foreground h-8"
-                            >
-                                <Menu className="mr-1.5 h-3 w-3" />
-                                Browse Categories
-                                <ChevronDown className="ml-1.5 h-3 w-3 transition-transform duration-200 group-data-[state=open]:rotate-180" />
-                            </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent className="w-56">
-                            {categories.map((cat) => (
-                            <DropdownMenuItem key={cat.label} asChild>
-                                <Link href={cat.href}>{cat.label}</Link>
-                            </DropdownMenuItem>
-                            ))}
-                        </DropdownMenuContent>
-                    </DropdownMenu>
-                </div>
+                <Separator orientation="vertical" className="h-6" />
+                <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <Button 
+                          size="sm" 
+                          variant="ghost"
+                          className="text-sm font-medium gap-1 h-9 px-3 hover:bg-secondary"
+                        >
+                            หมวดหมู่
+                            <ChevronDown className="h-3 w-3" />
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent className="w-52" align="start">
+                        {categories.map((cat) => (
+                        <DropdownMenuItem key={cat.label} asChild className="cursor-pointer">
+                            <Link href={cat.href}>{cat.label}</Link>
+                        </DropdownMenuItem>
+                        ))}
+                    </DropdownMenuContent>
+                </DropdownMenu>
             </div>
             
-            <nav className="hidden md:flex items-center gap-x-2 text-sm font-medium">
+            <nav className="flex items-center gap-x-1">
                 {navLinks.map(link => (
-                    <Button key={link.href} variant="ghost" asChild className="text-base font-medium hover:bg-primary/10 hover:text-primary transition-all duration-300 data-[state=open]:bg-primary/10 rounded-full px-5">
+                    <Button key={link.href} variant="ghost" asChild className="text-sm font-medium hover:bg-secondary px-4">
                         <Link href={link.href}>
                             {link.label}
                         </Link>
@@ -122,19 +117,21 @@ export default function Header() {
                 
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" className="text-base font-medium hover:bg-primary/10 hover:text-primary transition-all duration-300 data-[state=open]:bg-primary/10 rounded-full px-5">
+                        <Button variant="ghost" className="text-sm font-medium hover:bg-secondary px-4">
                             ข้อมูลเพิ่มเติม
-                            <ChevronDown className="ml-1 h-4 w-4" />
+                            <ChevronDown className="ml-1 h-3 w-3" />
                         </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent className="rounded-xl shadow-xl border-border/50 bg-background/95 backdrop-blur-xl">
+                    <DropdownMenuContent className="w-48">
                         {moreLinks.map(link => (
-                            <DropdownMenuItem key={link.href} asChild className="hover:bg-primary/10 focus:bg-primary/10 cursor-pointer transition-colors"><Link href={link.href}>{link.label}</Link></DropdownMenuItem>
+                            <DropdownMenuItem key={link.href} asChild className="cursor-pointer">
+                                <Link href={link.href}>{link.label}</Link>
+                            </DropdownMenuItem>
                         ))}
                     </DropdownMenuContent>
                 </DropdownMenu>
 
-                <Button variant="default" asChild className="text-base font-semibold transition-all duration-300 rounded-full px-6 shadow-lg shadow-primary/20 hover:shadow-primary/40 hover:-translate-y-0.5 ml-2">
+                <Button asChild className="text-sm font-medium ml-2">
                     <Link href="/contact">
                         ติดต่อเรา
                     </Link>
@@ -142,60 +139,84 @@ export default function Header() {
             </nav>
           </div>
 
-        {/* --- Mobile Layout --- */}
-        <div className="flex w-full items-center justify-between md:hidden">
+        <div className="flex lg:hidden w-full items-center justify-between">
             <div className="flex-1 flex justify-start">
               <Sheet>
                   <SheetTrigger asChild>
-                      <Button variant="ghost" size="icon" className="w-10">
-                          <Menu className="h-6 w-6" />
+                      <Button variant="ghost" size="icon" className="w-10 h-10">
+                          <Menu className="h-5 w-5" />
                           <span className="sr-only">Toggle Menu</span>
                       </Button>
                   </SheetTrigger>
-                  <SheetContent side="left" className="pr-0 bg-background w-[80vw] max-w-xs">
+                  <SheetContent side="left" className="w-[300px] sm:w-[350px]">
                       <SheetHeader className="sr-only">
                           <SheetTitle>Menu</SheetTitle>
                           <SheetDescription>Main navigation menu</SheetDescription>
                       </SheetHeader>
-                      <Link href="/" className="px-6 flex items-center mb-8 mt-6">
-                          <Logo className="h-10 w-auto" />
-                      </Link>
-                      <div className="flex flex-col space-y-4 px-6">
-                          <p className="font-bold text-primary">MENU</p>
-                          {[...navLinks, ...moreLinks].map(({ href, label }) => (
-                          <Link
-                              key={label}
-                              href={href}
-                              className="text-lg transition-colors hover:text-primary"
-                          >
-                              {label}
+                      <div className="flex flex-col h-full">
+                          <Link href="/" className="flex items-center gap-2 mb-8 mt-4">
+                              <Logo className="h-9 w-auto" />
                           </Link>
-                          ))}
-                          <Link href="/contact" className="text-lg transition-colors hover:text-primary">
-                              ติดต่อเรา
-                          </Link>
-                          <Separator className="my-4"/>
-                          <p className="font-bold text-primary">CATEGORIES</p>
-                          {categories.map(({ href, label }) => (
-                          <Link
-                              key={label}
-                              href={href}
-                              className="text-lg transition-colors hover:text-primary"
-                          >
-                              {label}
-                          </Link>
-                          ))}
+                          <nav className="flex flex-col gap-1">
+                              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2 px-2">เมนูหลัก</p>
+                              {navLinks.map(({ href, label }) => (
+                              <Link
+                                  key={label}
+                                  href={href}
+                                  className="text-base font-medium px-2 py-2 rounded-md hover:bg-secondary transition-colors"
+                              >
+                                  {label}
+                              </Link>
+                              ))}
+                              <Link href="/contact" className="text-base font-medium px-2 py-2 rounded-md hover:bg-secondary transition-colors">
+                                  ติดต่อเรา
+                              </Link>
+                              
+                              <Separator className="my-4"/>
+                              
+                              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2 px-2">หมวดหมู่</p>
+                              {categories.map(({ href, label }) => (
+                              <Link
+                                  key={label}
+                                  href={href}
+                                  className="text-sm text-muted-foreground px-2 py-2 rounded-md hover:bg-secondary transition-colors"
+                              >
+                                  {label}
+                              </Link>
+                              ))}
+                              
+                              <Separator className="my-4"/>
+                              
+                              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2 px-2">ติดตามเรา</p>
+                              <div className="flex gap-3 px-2">
+                                  {socialLinks.map((social) => (
+                                      <Link 
+                                          key={social.label}
+                                          href={social.href} 
+                                          target="_blank" 
+                                          rel="noopener noreferrer" 
+                                          className="p-2 rounded-full hover:bg-secondary transition-colors"
+                                      >
+                                          <social.icon className="h-5 w-5" />
+                                      </Link>
+                                  ))}
+                              </div>
+                          </nav>
                       </div>
                   </SheetContent>
               </Sheet>
             </div>
 
             <Link href="/" className="flex-shrink-0">
-                <Logo className="h-10 w-auto" />
+                <Logo className="h-9 w-auto" />
             </Link>
 
-            <div className="flex-1 flex justify-end items-center">
-                {/* Auth button could go here if re-enabled */}
+            <div className="flex-1 flex justify-end">
+                <Button variant="ghost" size="sm" asChild className="text-sm font-medium">
+                    <Link href="/contact">
+                        ติดต่อ
+                    </Link>
+                </Button>
             </div>
         </div>
       </div>
