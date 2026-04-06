@@ -17,10 +17,13 @@ export const priceTiers = {
   ],
 };
 
-export const getPricePerItem = (type: 'premium' | 'oversize', quantity: number): number => {
+export const getPricePerItem = (
+  type: "premium" | "oversize",
+  quantity: number,
+): number => {
   if (!type || quantity < 1) return 0;
   const tiers = priceTiers[type];
-  const tier = tiers.find(t => quantity >= t.min && quantity <= t.max);
+  const tier = tiers.find((t) => quantity >= t.min && quantity <= t.max);
   return tier ? tier.price : 0;
 };
 

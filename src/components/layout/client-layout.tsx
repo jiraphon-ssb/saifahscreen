@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { usePathname } from "next/navigation";
 import Header from "@/components/layout/header";
@@ -10,7 +10,7 @@ export default function ClientLayout({
   children: React.ReactNode;
 }>) {
   const pathname = usePathname();
-  const isDesignPage = pathname.startsWith('/design');
+  const isDesignPage = pathname.startsWith("/design");
 
   return (
     <>

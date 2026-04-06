@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import LZString from 'lz-string';
-import { Button } from '@/components/ui/button';
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import LZString from "lz-string";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -12,17 +12,17 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { useToast } from '@/hooks/use-toast';
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useToast } from "@/hooks/use-toast";
 
-import type { DesignElement, ProductConfiguration } from './design-tool';
-import { Loader2, Minus, Plus, FileText, Tag, Printer } from 'lucide-react';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { Separator } from '@/components/ui/separator';
-import DesignPreview from '@/components/design-preview';
-import { getPricePerItem, PRICE_PER_EXTRA_SPOT } from '@/lib/pricing';
+import type { DesignElement, ProductConfiguration } from "./design-tool";
+import { Loader2, Minus, Plus, FileText, Tag, Printer } from "lucide-react";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Separator } from "@/components/ui/separator";
+import DesignPreview from "@/components/design-preview";
+import { getPricePerItem, PRICE_PER_EXTRA_SPOT } from "@/lib/pricing";
 
 interface GenerateSummaryDialogProps {
   children: React.ReactNode;
@@ -35,7 +35,7 @@ interface GenerateSummaryDialogProps {
   initialQuantities: { [key: string]: number };
 }
 
-const availableSizes = ['S', 'M', 'L', 'XL', '2XL', '3XL'];
+const availableSizes = ["S", "M", "L", "XL", "2XL", "3XL"];
 
 export default function GenerateSummaryDialog({
   children,
@@ -69,74 +69,84 @@ export default function GenerateSummaryDialog({
       return { ...prev, [size]: newQuantity };
     });
   };
-  
+
   const handleManualQuantityChange = (size: string, value: string) => {
     const newQuantity = parseInt(value, 10);
-    setQuantities(prev => {
-        const newQuantities = { ...prev };
-        if (isNaN(newQuantity) || newQuantity <= 0) {
-            delete newQuantities[size];
-        } else {
-            newQuantities[size] = newQuantity;
-        }
-        return newQuantities;
+    setQuantities((prev) => {
+      const newQuantities = { ...prev };
+      if (isNaN(newQuantity) || newQuantity <= 0) {
+        delete newQuantities[size];
+      } else {
+        newQuantities[size] = newQuantity;
+      }
+      return newQuantities;
     });
   };
 
-  const totalQuantity = Object.values(quantities).reduce((sum, qty) => sum + qty, 0);
+  const totalQuantity = Object.values(quantities).reduce(
+    (sum, qty) => sum + qty,
+    0,
+  );
 
   const handleConfirm = async () => {
     if (!designName) {
-      toast({ variant: 'destructive', title: 'กรุณาตั้งชื่อดีไซน์ของคุณ' });
+      toast({ variant: "destructive", title: "กรุณาตั้งชื่อดีไซน์ของคุณ" });
       return;
     }
     if (totalQuantity === 0) {
-      toast({ variant: 'destructive', title: 'กรุณาเพิ่มสินค้าอย่างน้อย 1 ชิ้น' });
+      toast({
+        variant: "destructive",
+        title: "กรุณาเพิ่มสินค้าอย่างน้อย 1 ชิ้น",
+      });
       return;
     }
 
     setIsGenerating(true);
-    
-    const firstImage = elements.find((el) => el.type === 'image' && el.url);
+
+    const firstImage = elements.find((el) => el.type === "image" && el.url);
     const previewImageUrl = firstImage?.url || productConfig.tshirt.imageUrl;
-    
+
     const designData = {
-        productId: `${productConfig.productType}-tshirt`,
-        name: designName,
-        previewImageUrl: previewImageUrl,
-        designConfiguration: elements,
-        productConfiguration: productConfig,
-        quantities: quantities,
+      productId: `${productConfig.productType}-tshirt`,
+      name: designName,
+      previewImageUrl: previewImageUrl,
+      designConfiguration: elements,
+      productConfiguration: productConfig,
+      quantities: quantities,
     };
-    
+
     try {
-      const compressed = LZString.compressToEncodedURIComponent(JSON.stringify(designData));
+      const compressed = LZString.compressToEncodedURIComponent(
+        JSON.stringify(designData),
+      );
 
       toast({
-          title: 'สำเร็จ!',
-          description: `กำลังสร้างสรุปสำหรับดีไซน์ '${designName}'...`,
+        title: "สำเร็จ!",
+        description: `กำลังสร้างสรุปสำหรับดีไซน์ '${designName}'...`,
       });
-      
+
       onOpenChange(false);
       setIsGenerating(false);
       router.push(`/summary?data=${compressed}`);
-
     } catch (err) {
       console.error(err);
       toast({
-          variant: 'destructive',
-          title: 'เกิดข้อผิดพลาด',
-          description: 'ไม่สามารถบีบอัดข้อมูลได้',
+        variant: "destructive",
+        title: "เกิดข้อผิดพลาด",
+        description: "ไม่สามารถบีบอัดข้อมูลได้",
       });
       setIsGenerating(false);
     }
   };
-  
+
   const handleOpenChange = (isOpen: boolean) => {
     onOpenChange(isOpen);
-  }
-  
-  const basePricePerItem = getPricePerItem(productConfig.productType, totalQuantity);
+  };
+
+  const basePricePerItem = getPricePerItem(
+    productConfig.productType,
+    totalQuantity,
+  );
   const extraSpots = Math.max(0, elements.length - 1);
   const extraSpotPrice = extraSpots * PRICE_PER_EXTRA_SPOT;
   const unitPrice = basePricePerItem + extraSpotPrice;
@@ -153,90 +163,117 @@ export default function GenerateSummaryDialog({
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent className="sm:max-w-3xl">
         <DialogHeader>
-          <DialogTitle className="font-headline text-2xl">สร้างสรุปสำหรับส่งให้เซลล์</DialogTitle>
+          <DialogTitle className="font-headline text-2xl">
+            สร้างสรุปสำหรับส่งให้เซลล์
+          </DialogTitle>
           <DialogDescription>
             ระบุจำนวนที่ต้องการเพื่อคำนวณราคาและสร้างใบสรุปดีไซน์สำหรับคุยกับทีมขาย
           </DialogDescription>
         </DialogHeader>
 
         <div className="grid md:grid-cols-2 gap-8 py-4">
-            {/* Left: Preview and Summary */}
-            <div className="flex flex-col gap-6">
-                <div className='flex flex-col items-center gap-4'>
-                    <div className="relative w-[200px] h-[200px] rounded-lg bg-muted shadow-md overflow-hidden">
-                        <DesignPreview design={designForPreview} size={200} />
-                    </div>
-                     <div className="text-center">
-                        <h3 className="font-semibold text-lg">{designName || "ดีไซน์ไม่มีชื่อ"}</h3>
-                        <p className="text-sm text-muted-foreground capitalize">{productConfig.productType} - {productConfig.tshirt.name}</p>
-                    </div>
-                </div>
-                <Separator />
-                 <div className="space-y-3 text-sm">
-                    <h4 className="font-semibold mb-2">สรุปราคา</h4>
-                    <div className="flex justify-between items-center">
-                        <span className='text-muted-foreground flex items-center gap-2'><Tag className='w-4 h-4'/>ราคา/ตัว (สำหรับ {totalQuantity} ตัว)</span>
-                        <span>{basePricePerItem.toLocaleString()} บาท</span>
-                    </div>
-                     <div className="flex justify-between items-center">
-                        <span className='text-muted-foreground flex items-center gap-2'><Printer className='w-4 h-4'/>ค่าสกรีนเพิ่ม ({extraSpots} จุด)</span>
-                        <span>+ {extraSpotPrice.toLocaleString()} บาท</span>
-                    </div>
-                     <div className="flex justify-between items-center font-semibold">
-                        <span className='text-muted-foreground'>ราคารวม/ตัว</span>
-                        <span>{unitPrice.toLocaleString()} บาท</span>
-                    </div>
-                     <div className="flex justify-between items-center text-xl font-semibold text-primary pt-2 border-t mt-2">
-                        <span>ราคารวมทั้งหมด</span>
-                        <span>{total.toLocaleString()} บาท</span>
-                    </div>
-                </div>
+          {/* Left: Preview and Summary */}
+          <div className="flex flex-col gap-6">
+            <div className="flex flex-col items-center gap-4">
+              <div className="relative w-[200px] h-[200px] rounded-lg bg-muted shadow-md overflow-hidden">
+                <DesignPreview design={designForPreview} size={200} />
+              </div>
+              <div className="text-center">
+                <h3 className="font-semibold text-lg">
+                  {designName || "ดีไซน์ไม่มีชื่อ"}
+                </h3>
+                <p className="text-sm text-muted-foreground capitalize">
+                  {productConfig.productType} - {productConfig.tshirt.name}
+                </p>
+              </div>
             </div>
+            <Separator />
+            <div className="space-y-3 text-sm">
+              <h4 className="font-semibold mb-2">สรุปราคา</h4>
+              <div className="flex justify-between items-center">
+                <span className="text-muted-foreground flex items-center gap-2">
+                  <Tag className="w-4 h-4" />
+                  ราคา/ตัว (สำหรับ {totalQuantity} ตัว)
+                </span>
+                <span>{basePricePerItem.toLocaleString()} บาท</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-muted-foreground flex items-center gap-2">
+                  <Printer className="w-4 h-4" />
+                  ค่าสกรีนเพิ่ม ({extraSpots} จุด)
+                </span>
+                <span>+ {extraSpotPrice.toLocaleString()} บาท</span>
+              </div>
+              <div className="flex justify-between items-center font-semibold">
+                <span className="text-muted-foreground">ราคารวม/ตัว</span>
+                <span>{unitPrice.toLocaleString()} บาท</span>
+              </div>
+              <div className="flex justify-between items-center text-xl font-semibold text-primary pt-2 border-t mt-2">
+                <span>ราคารวมทั้งหมด</span>
+                <span>{total.toLocaleString()} บาท</span>
+              </div>
+            </div>
+          </div>
 
-            {/* Right: Quantities */}
-            <div>
-              <h4 className="font-semibold mb-4">จำนวนที่ต้องการ</h4>
-              <ScrollArea className="h-80 pr-4 -mr-4">
-                  <div className="space-y-4">
-                  {availableSizes.map((size) => (
-                      <div key={size} className="grid grid-cols-[40px_1fr] items-center gap-4">
-                          <Label htmlFor={`quantity-${size}`} className='text-right font-medium'>{size}</Label>
-                          <div className="flex items-center">
-                              <Button
-                              variant="outline" size="icon"
-                              onClick={() => handleQuantityChange(size, -1)}
-                              className="rounded-r-none h-10 w-10"
-                              >
-                              <Minus className="h-4 w-4" />
-                              </Button>
-                              <Input
-                                id={`quantity-${size}`}
-                                type="number"
-                                value={quantities[size] || ''}
-                                onChange={(e) => handleManualQuantityChange(size, e.target.value)}
-                                className="text-center rounded-none z-10 -mx-px w-16 h-10"
-                                placeholder="0"
-                              />
-                              <Button
-                              variant="outline" size="icon"
-                              onClick={() => handleQuantityChange(size, 1)}
-                              className="rounded-l-none h-10 w-10"
-                              >
-                              <Plus className="h-4 w-4" />
-                              </Button>
-                          </div>
-                      </div>
-                  ))}
+          {/* Right: Quantities */}
+          <div>
+            <h4 className="font-semibold mb-4">จำนวนที่ต้องการ</h4>
+            <ScrollArea className="h-80 pr-4 -mr-4">
+              <div className="space-y-4">
+                {availableSizes.map((size) => (
+                  <div
+                    key={size}
+                    className="grid grid-cols-[40px_1fr] items-center gap-4"
+                  >
+                    <Label
+                      htmlFor={`quantity-${size}`}
+                      className="text-right font-medium"
+                    >
+                      {size}
+                    </Label>
+                    <div className="flex items-center">
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        onClick={() => handleQuantityChange(size, -1)}
+                        className="rounded-r-none h-10 w-10"
+                      >
+                        <Minus className="h-4 w-4" />
+                      </Button>
+                      <Input
+                        id={`quantity-${size}`}
+                        type="number"
+                        value={quantities[size] || ""}
+                        onChange={(e) =>
+                          handleManualQuantityChange(size, e.target.value)
+                        }
+                        className="text-center rounded-none z-10 -mx-px w-16 h-10"
+                        placeholder="0"
+                      />
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        onClick={() => handleQuantityChange(size, 1)}
+                        className="rounded-l-none h-10 w-10"
+                      >
+                        <Plus className="h-4 w-4" />
+                      </Button>
+                    </div>
                   </div>
-              </ScrollArea>
-            </div>
+                ))}
+              </div>
+            </ScrollArea>
+          </div>
         </div>
 
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             ยกเลิก
           </Button>
-          <Button onClick={handleConfirm} disabled={isGenerating || totalQuantity === 0}>
+          <Button
+            onClick={handleConfirm}
+            disabled={isGenerating || totalQuantity === 0}
+          >
             {isGenerating ? (
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
             ) : (

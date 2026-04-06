@@ -1,4 +1,4 @@
-import data from './placeholder-images.json';
+import data from "./placeholder-images.json";
 
 export type ImagePlaceholder = {
   id: string;
@@ -9,4 +9,5 @@ export type ImagePlaceholder = {
   name?: string;
 };
 
-export const PlaceHolderImages: ImagePlaceholder[] = data.placeholderImages.filter(p => p.imageUrl) as ImagePlaceholder[];
+export const PlaceHolderImages: ImagePlaceholder[] =
+  data.placeholderImages.filter((p) => p.imageUrl) as ImagePlaceholder[];

@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { useRef, useEffect, useState, type ReactNode } from 'react';
-import { cn } from '@/lib/utils';
+import { useRef, useEffect, useState, type ReactNode } from "react";
+import { cn } from "@/lib/utils";
 
 interface AnimateOnScrollProps {
   children: ReactNode;
@@ -11,7 +11,13 @@ interface AnimateOnScrollProps {
   [key: string]: any;
 }
 
-export default function AnimateOnScroll({ children, className, delay = 0, as: Tag = 'div', ...props }: AnimateOnScrollProps) {
+export default function AnimateOnScroll({
+  children,
+  className,
+  delay = 0,
+  as: Tag = "div",
+  ...props
+}: AnimateOnScrollProps) {
   const ref = useRef<HTMLElement>(null);
   const [isInView, setIsInView] = useState(false);
 
@@ -28,7 +34,7 @@ export default function AnimateOnScroll({ children, className, delay = 0, as: Ta
       },
       {
         threshold: 0.1, // Trigger when 10% of element is visible
-      }
+      },
     );
 
     observer.observe(element);
@@ -40,11 +46,11 @@ export default function AnimateOnScroll({ children, className, delay = 0, as: Ta
     <Tag
       ref={ref}
       className={cn(
-        'opacity-0', // Start hidden
-        isInView && 'animate-fade-in-up', // Apply animation when in view
-        className
+        "opacity-0", // Start hidden
+        isInView && "animate-fade-in-up", // Apply animation when in view
+        className,
       )}
-      style={ isInView ? { animationDelay: `${delay}ms` } : {} }
+      style={isInView ? { animationDelay: `${delay}ms` } : {}}
       {...props}
     >
       {children}

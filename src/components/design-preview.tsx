@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import Image from 'next/image';
-import type { DesignElement } from '@/app/design/components/design-tool';
+import Image from "next/image";
+import type { DesignElement } from "@/app/design/components/design-tool";
 
 interface DesignPreviewProps {
   design: {
@@ -21,26 +21,35 @@ interface DesignPreviewProps {
 
 const ORIGINAL_CANVAS_SIZE = 600;
 
-export default function DesignPreview({ design, size = 400 }: DesignPreviewProps) {
+export default function DesignPreview({
+  design,
+  size = 400,
+}: DesignPreviewProps) {
   const scale = size / ORIGINAL_CANVAS_SIZE;
 
   let elements: DesignElement[] = [];
   try {
-    if (typeof design.designConfiguration === 'string') {
+    if (typeof design.designConfiguration === "string") {
       elements = JSON.parse(design.designConfiguration);
     } else if (Array.isArray(design.designConfiguration)) {
       elements = design.designConfiguration;
     }
   } catch (e) {
-    console.error('Failed to parse design configuration:', e);
+    console.error("Failed to parse design configuration:", e);
   }
 
-  const imageUrl = design.previewImageUrl || design.productConfiguration?.tshirt.imageUrl || '/images/t-shirt-mockup-white-saifah.webp';
+  const imageUrl =
+    design.previewImageUrl ||
+    design.productConfiguration?.tshirt.imageUrl ||
+    "/images/t-shirt-mockup-white-saifah.webp";
 
-  const parseShadow = (shadowString: string | undefined, currentScale: number) => {
-    if (!shadowString || shadowString === 'none') return 'none';
+  const parseShadow = (
+    shadowString: string | undefined,
+    currentScale: number,
+  ) => {
+    if (!shadowString || shadowString === "none") return "none";
     const parts = shadowString.match(/(-?\d*\.?\d+px)|(#[0-9a-fA-F]+)/g);
-    if (!parts || parts.length < 4) return 'none';
+    if (!parts || parts.length < 4) return "none";
     return `${parseFloat(parts[0]) * currentScale}px ${parseFloat(parts[1]) * currentScale}px ${parseFloat(parts[2]) * currentScale}px ${parts[3]}`;
   };
 
@@ -56,17 +65,20 @@ export default function DesignPreview({ design, size = 400 }: DesignPreviewProps
       <div className="absolute inset-0">
         {elements.map((element, index) => {
           const textStyle: React.CSSProperties = {
-            fontFamily: element.fontFamily || 'sans-serif',
+            fontFamily: element.fontFamily || "sans-serif",
             fontSize: `${(element.fontSize || 48) * scale}px`,
             fontWeight: element.fontWeight || 700,
             lineHeight: element.lineHeight || 1.2,
             letterSpacing: `${(element.letterSpacing || 0) * scale}px`,
-            textAlign: element.textAlign || 'center',
-            color: element.color || '#000000',
+            textAlign: element.textAlign || "center",
+            color: element.color || "#000000",
             textShadow: parseShadow(element.textShadow, scale),
-            WebkitTextStroke: element.strokeWidth && element.strokeWidth > 0 ? `${element.strokeWidth * scale}px ${element.strokeColor}` : 'unset',
-            paintOrder: 'stroke fill',
-            whiteSpace: 'pre-wrap',
+            WebkitTextStroke:
+              element.strokeWidth && element.strokeWidth > 0
+                ? `${element.strokeWidth * scale}px ${element.strokeColor}`
+                : "unset",
+            paintOrder: "stroke fill",
+            whiteSpace: "pre-wrap",
             opacity: element.opacity ?? 1,
           };
 
@@ -84,8 +96,14 @@ export default function DesignPreview({ design, size = 400 }: DesignPreviewProps
             opacity: element.opacity ?? 1,
           };
 
-          const scaledWidth = typeof element.width === 'number' ? element.width * scale : element.width;
-          const scaledHeight = typeof element.height === 'number' ? element.height * scale : element.height;
+          const scaledWidth =
+            typeof element.width === "number"
+              ? element.width * scale
+              : element.width;
+          const scaledHeight =
+            typeof element.height === "number"
+              ? element.height * scale
+              : element.height;
 
           return (
             <div
@@ -98,10 +116,10 @@ export default function DesignPreview({ design, size = 400 }: DesignPreviewProps
                 height: scaledHeight,
                 zIndex: index + 1,
                 transform: `rotate(${element.rotation || 0}deg)`,
-                visibility: element.visible === false ? 'hidden' : 'visible',
+                visibility: element.visible === false ? "hidden" : "visible",
               }}
             >
-              {element.type === 'image' && element.url && (
+              {element.type === "image" && element.url && (
                 <img
                   src={element.url}
                   alt={element.name}
@@ -109,7 +127,7 @@ export default function DesignPreview({ design, size = 400 }: DesignPreviewProps
                   style={imageStyle}
                 />
               )}
-              {element.type === 'text' && (
+              {element.type === "text" && (
                 <div
                   className="w-full h-full flex items-center justify-center pointer-events-none select-none"
                   style={textStyle}

@@ -1,17 +1,21 @@
-'use client';
+"use client";
 
-import Image from 'next/image';
-import { Rnd } from 'react-rnd';
-import { cn } from '@/lib/utils';
-import type { DesignElement } from './design-tool';
-import { useEffect, useState } from 'react';
+import Image from "next/image";
+import { Rnd } from "react-rnd";
+import { cn } from "@/lib/utils";
+import type { DesignElement } from "./design-tool";
+import { useEffect, useState } from "react";
 
 interface CanvasPreviewProps {
   elements: DesignElement[];
   imageUrl: string;
   selectedElementId: string | null;
   setSelectedElementId: (id: string | null) => void;
-  updateElement: (id: string, props: Partial<DesignElement>, pushToHistory?: boolean) => void;
+  updateElement: (
+    id: string,
+    props: Partial<DesignElement>,
+    pushToHistory?: boolean,
+  ) => void;
   containerSize: number;
   zoom: number;
   hideMockup?: boolean;
@@ -35,15 +39,21 @@ export default function CanvasPreview({
     e.stopPropagation();
     setSelectedElementId(id);
   };
-  
-  const parseShadow = (shadowString: string | undefined, currentScale: number) => {
-    if (!shadowString || shadowString === 'none') return 'none';
+
+  const parseShadow = (
+    shadowString: string | undefined,
+    currentScale: number,
+  ) => {
+    if (!shadowString || shadowString === "none") return "none";
     const parts = shadowString.match(/(-?\d*\.?\d+px)|(#[0-9a-fA-F]+)/g);
-    if (!parts || parts.length < 4) return 'none';
+    if (!parts || parts.length < 4) return "none";
     return `${parseFloat(parts[0]) * currentScale}px ${parseFloat(parts[1]) * currentScale}px ${parseFloat(parts[2]) * currentScale}px ${parts[3]}`;
   };
 
-  const [guides, setGuides] = useState<{ x: boolean; y: boolean }>({ x: false, y: false });
+  const [guides, setGuides] = useState<{ x: boolean; y: boolean }>({
+    x: false,
+    y: false,
+  });
 
   return (
     <div
@@ -76,20 +86,23 @@ export default function CanvasPreview({
             const isSelected = selectedElementId === element.id;
 
             const textStyle: React.CSSProperties = {
-              fontFamily: element.fontFamily || 'sans-serif',
+              fontFamily: element.fontFamily || "sans-serif",
               fontSize: `${(element.fontSize || 48) * scale}px`,
               fontWeight: element.fontWeight || 700,
               lineHeight: element.lineHeight || 1.2,
               letterSpacing: `${(element.letterSpacing || 0) * scale}px`,
-              textAlign: element.textAlign || 'center',
-              color: element.color || '#000000',
+              textAlign: element.textAlign || "center",
+              color: element.color || "#000000",
               textShadow: parseShadow(element.textShadow, scale),
-              WebkitTextStroke: element.strokeWidth && element.strokeWidth > 0 ? `${element.strokeWidth * scale}px ${element.strokeColor}` : 'unset',
-              paintOrder: 'stroke fill',
-              whiteSpace: 'pre-wrap',
+              WebkitTextStroke:
+                element.strokeWidth && element.strokeWidth > 0
+                  ? `${element.strokeWidth * scale}px ${element.strokeColor}`
+                  : "unset",
+              paintOrder: "stroke fill",
+              whiteSpace: "pre-wrap",
               opacity: element.opacity ?? 1,
             };
-            
+
             const imageStyle: React.CSSProperties = {
               filter: `
                 brightness(${element.filters?.brightness ?? 100}%)
@@ -104,8 +117,14 @@ export default function CanvasPreview({
               opacity: element.opacity ?? 1,
             };
 
-            const scaledWidth = typeof element.width === 'number' ? element.width * scale : element.width;
-            const scaledHeight = typeof element.height === 'number' ? element.height * scale : element.height;
+            const scaledWidth =
+              typeof element.width === "number"
+                ? element.width * scale
+                : element.width;
+            const scaledHeight =
+              typeof element.height === "number"
+                ? element.height * scale
+                : element.height;
 
             return (
               <Rnd
@@ -141,10 +160,12 @@ export default function CanvasPreview({
 
                   // Magnetic Snap
                   if (Math.abs(centerX - canvasCenter) < threshold) {
-                    finalX = (canvasCenter - (scaledWidth as number) / 2) / scale;
+                    finalX =
+                      (canvasCenter - (scaledWidth as number) / 2) / scale;
                   }
                   if (Math.abs(centerY - canvasCenter) < threshold) {
-                    finalY = (canvasCenter - (scaledHeight as number) / 2) / scale;
+                    finalY =
+                      (canvasCenter - (scaledHeight as number) / 2) / scale;
                   }
 
                   updateElement(element.id, { x: finalX, y: finalY });
@@ -158,14 +179,17 @@ export default function CanvasPreview({
                     y: position.y / scale,
                   });
                 }}
-                onClick={(e: React.MouseEvent) => handleElementClick(e, element.id)}
+                onClick={(e: React.MouseEvent) =>
+                  handleElementClick(e, element.id)
+                }
                 className={cn(
                   "group/element outline-none",
-                  isSelected && 'border-2 border-dashed border-primary z-20 shadow-2xl'
+                  isSelected &&
+                    "border-2 border-dashed border-primary z-20 shadow-2xl",
                 )}
                 style={{
                   zIndex: index + 1,
-                  visibility: element.visible === false ? 'hidden' : 'visible',
+                  visibility: element.visible === false ? "hidden" : "visible",
                   transform: `rotate(${element.rotation || 0}deg)`,
                 }}
                 bounds="parent"
@@ -173,7 +197,7 @@ export default function CanvasPreview({
                 disableDragging={!isSelected}
               >
                 <div className="w-full h-full relative">
-                  {element.type === 'image' && element.url && (
+                  {element.type === "image" && element.url && (
                     <img
                       src={element.url}
                       alt={element.name}
@@ -181,27 +205,32 @@ export default function CanvasPreview({
                       style={imageStyle}
                     />
                   )}
-                  {element.type === 'text' && (
+                  {element.type === "text" && (
                     <div className="w-full h-full pointer-events-none select-none">
                       {element.curve && element.curve !== 0 ? (
-                        <svg 
-                          viewBox={`0 0 ${scaledWidth} ${scaledHeight}`} 
+                        <svg
+                          viewBox={`0 0 ${scaledWidth} ${scaledHeight}`}
                           className="w-full h-full overflow-visible"
-                          style={{ filter: textStyle.textShadow !== 'none' ? `drop-shadow(${textStyle.textShadow})` : 'none' }}
+                          style={{
+                            filter:
+                              textStyle.textShadow !== "none"
+                                ? `drop-shadow(${textStyle.textShadow})`
+                                : "none",
+                          }}
                         >
                           <defs>
-                            <path 
-                              id={`path-${element.id}`} 
+                            <path
+                              id={`path-${element.id}`}
                               d={(() => {
                                 const w = scaledWidth as number;
                                 const h = scaledHeight as number;
                                 const c = element.curve || 0;
                                 const bend = (h / 2) * (c / 100);
-                                return `M 0,${h/2} Q ${w/2},${h/2 + bend * 2} ${w},${h/2}`;
-                              })()} 
+                                return `M 0,${h / 2} Q ${w / 2},${h / 2 + bend * 2} ${w},${h / 2}`;
+                              })()}
                             />
                           </defs>
-                          <text 
+                          <text
                             fill={element.color}
                             style={{
                               fontFamily: textStyle.fontFamily,
@@ -210,9 +239,9 @@ export default function CanvasPreview({
                               WebkitTextStroke: textStyle.WebkitTextStroke,
                             }}
                           >
-                            <textPath 
-                              xlinkHref={`#path-${element.id}`} 
-                              startOffset="50%" 
+                            <textPath
+                              xlinkHref={`#path-${element.id}`}
+                              startOffset="50%"
                               textAnchor="middle"
                             >
                               {element.text}

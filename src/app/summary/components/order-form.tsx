@@ -1,19 +1,33 @@
-'use client';
+"use client";
 
-import { useState, useRef } from 'react';
-import { User, Phone, MessageCircle, Package, Palette, Ruler, FileText, Upload, X, File, Archive, Loader2, Check } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Button } from '@/components/ui/button';
-import { Separator } from '@/components/ui/separator';
-import { Badge } from '@/components/ui/badge';
-import { useToast } from '@/hooks/use-toast';
-import LineIcon from '@/components/icons/line-icon';
-import type { ProductConfiguration } from '@/app/design/components/design-tool';
-import { getPricePerItem, PRICE_PER_EXTRA_SPOT } from '@/lib/pricing';
-import LZString from 'lz-string';
+import { useState, useRef } from "react";
+import {
+  User,
+  Phone,
+  MessageCircle,
+  Package,
+  Palette,
+  Ruler,
+  FileText,
+  Upload,
+  X,
+  File,
+  Archive,
+  Loader2,
+  Check,
+} from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
+import { Badge } from "@/components/ui/badge";
+import { useToast } from "@/hooks/use-toast";
+import LineIcon from "@/components/icons/line-icon";
+import type { ProductConfiguration } from "@/app/design/components/design-tool";
+import { getPricePerItem, PRICE_PER_EXTRA_SPOT } from "@/lib/pricing";
+import LZString from "lz-string";
 
 export interface SizeQuantity {
   S: number;
@@ -37,34 +51,48 @@ interface OrderFormProps {
   designState?: any;
 }
 
-const LINE_OFFICIAL_ID = 'saifahscreen';
+const LINE_OFFICIAL_ID = "saifahscreen";
 
-export default function OrderForm({ productConfig, quantities, elementsCount, designId, designState }: OrderFormProps) {
+export default function OrderForm({
+  productConfig,
+  quantities,
+  elementsCount,
+  designId,
+  designState,
+}: OrderFormProps) {
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [customerData, setCustomerData] = useState({
-    name: '',
-    phone: '',
-    lineId: '',
+    name: "",
+    phone: "",
+    lineId: "",
   });
 
-  const [note, setNote] = useState('');
+  const [note, setNote] = useState("");
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
   const [isUploading, setIsUploading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const totalQuantity = Object.values(quantities).reduce((sum, qty) => sum + qty, 0);
-  const basePricePerItem = getPricePerItem(productConfig.productType, totalQuantity);
+  const totalQuantity = Object.values(quantities).reduce(
+    (sum, qty) => sum + qty,
+    0,
+  );
+  const basePricePerItem = getPricePerItem(
+    productConfig.productType,
+    totalQuantity,
+  );
   const extraSpots = Math.max(0, elementsCount - 1);
   const extraSpotPrice = extraSpots * PRICE_PER_EXTRA_SPOT;
   const unitPrice = basePricePerItem + extraSpotPrice;
   const estimatedTotal = unitPrice * totalQuantity;
 
   const generateShareUrl = () => {
-    if (typeof window === 'undefined') return '';
-    const baseUrl = window.location.origin + '/design';
-    const encoded = LZString.compressToEncodedURIComponent(JSON.stringify(designState));
+    if (typeof window === "undefined") return "";
+    const baseUrl = window.location.origin + "/design";
+    const encoded = LZString.compressToEncodedURIComponent(
+      JSON.stringify(designState),
+    );
     return `${baseUrl}?data=${encoded}`;
   };
 
@@ -80,11 +108,11 @@ export default function OrderForm({ productConfig, quantities, elementsCount, de
     try {
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
-        
+
         if (file.size > 10 * 1024 * 1024) {
           toast({
-            variant: 'destructive',
-            title: 'ไฟล์ใหญ่เกินไป',
+            variant: "destructive",
+            title: "ไฟล์ใหญ่เกินไป",
             description: `${file.name} มีขนาดเกิน 10MB`,
           });
           continue;
@@ -98,25 +126,25 @@ export default function OrderForm({ productConfig, quantities, elementsCount, de
         });
       }
 
-      setUploadedFiles(prev => [...prev, ...newFiles]);
+      setUploadedFiles((prev) => [...prev, ...newFiles]);
     } finally {
       setIsUploading(false);
       if (fileInputRef.current) {
-        fileInputRef.current.value = '';
+        fileInputRef.current.value = "";
       }
     }
   };
 
   const removeFile = (index: number) => {
-    setUploadedFiles(prev => prev.filter((_, i) => i !== index));
+    setUploadedFiles((prev) => prev.filter((_, i) => i !== index));
   };
 
   const handleSubmitToLine = async () => {
     if (!customerData.name || !customerData.phone) {
       toast({
-        variant: 'destructive',
-        title: 'กรุณากรอกข้อมูลให้ครบ',
-        description: 'ชื่อและเบอร์โทรศัพท์จำเป็นสำหรับติดต่อกลับ',
+        variant: "destructive",
+        title: "กรุณากรอกข้อมูลให้ครบ",
+        description: "ชื่อและเบอร์โทรศัพท์จำเป็นสำหรับติดต่อกลับ",
       });
       return;
     }
@@ -127,28 +155,29 @@ export default function OrderForm({ productConfig, quantities, elementsCount, de
       const sizesText = Object.entries(quantities)
         .filter(([_, qty]) => qty > 0)
         .map(([size, qty]) => `${size}×${qty}`)
-        .join(', ');
+        .join(", ");
 
-      const filesText = uploadedFiles.length > 0 
-        ? `\n📎 ไฟล์แนบ: ${uploadedFiles.length} ไฟล์\n(โลโก้, ฟอนต์, รูปภาพ)`
-        : '';
+      const filesText =
+        uploadedFiles.length > 0
+          ? `\n📎 ไฟล์แนบ: ${uploadedFiles.length} ไฟล์\n(โลโก้, ฟอนต์, รูปภาพ)`
+          : "";
 
       const message = `📋 คำสั่งซื้อดีไซน์ใหม่
 
 👤 ข้อมูลลูกค้า:
 - ชื่อ: ${customerData.name}
 - เบอร์: ${customerData.phone}
-- LINE ID: ${customerData.lineId || '-'}
+- LINE ID: ${customerData.lineId || "-"}
 
 👕 ข้อมูลสินค้า:
-- ประเภท: ${productConfig.productType === 'premium' ? 'Premium' : 'Oversize'}
+- ประเภท: ${productConfig.productType === "premium" ? "Premium" : "Oversize"}
 - สี: ${productConfig.tshirt.name}
 - ไซซ์และจำนวน: ${sizesText}
 - รวม: ${totalQuantity} ตัว
 
 💰 ราคาประมาณ: ~${estimatedTotal.toLocaleString()} บาท${filesText}
 
-${note ? `📝 หมายเหตุ: ${note}` : ''}
+${note ? `📝 หมายเหตุ: ${note}` : ""}
 
 🔗 ดูดีไซน์: ${shareUrl}
 
@@ -156,18 +185,18 @@ ${note ? `📝 หมายเหตุ: ${note}` : ''}
 ส่งจากระบบออกแบบออนไลน์ SAIFAH Screen`;
 
       const lineUrl = `https://line.me/R/oaMessage/@${LINE_OFFICIAL_ID}/?${encodeURIComponent(message)}`;
-      window.open(lineUrl, '_blank');
+      window.open(lineUrl, "_blank");
 
       toast({
-        title: 'กำลังเปิด LINE...',
-        description: 'ส่งข้อมูลให้แอนมินในไลน์แล้ว',
+        title: "กำลังเปิด LINE...",
+        description: "ส่งข้อมูลให้แอนมินในไลน์แล้ว",
       });
     } catch (error) {
-      console.error('Error submitting to LINE:', error);
+      console.error("Error submitting to LINE:", error);
       toast({
-        variant: 'destructive',
-        title: 'เกิดข้อผิดพลาด',
-        description: 'ไม่สามารถส่งข้อมูลได้ กรุณาลองอีกครั้ง',
+        variant: "destructive",
+        title: "เกิดข้อผิดพลาด",
+        description: "ไม่สามารถส่งข้อมูลได้ กรุณาลองอีกครั้ง",
       });
     } finally {
       setIsSubmitting(false);
@@ -175,9 +204,9 @@ ${note ? `📝 หมายเหตุ: ${note}` : ''}
   };
 
   const formatFileSize = (bytes: number) => {
-    if (bytes < 1024) return bytes + ' B';
-    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
-    return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+    if (bytes < 1024) return bytes + " B";
+    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + " KB";
+    return (bytes / (1024 * 1024)).toFixed(1) + " MB";
   };
 
   return (
@@ -197,7 +226,9 @@ ${note ? `📝 หมายเหตุ: ${note}` : ''}
                 id="name"
                 placeholder="สมชาย ใจดี"
                 value={customerData.name}
-                onChange={(e) => setCustomerData(prev => ({ ...prev, name: e.target.value }))}
+                onChange={(e) =>
+                  setCustomerData((prev) => ({ ...prev, name: e.target.value }))
+                }
               />
             </div>
             <div className="space-y-2">
@@ -206,7 +237,12 @@ ${note ? `📝 หมายเหตุ: ${note}` : ''}
                 id="phone"
                 placeholder="089-xxx-xxxx"
                 value={customerData.phone}
-                onChange={(e) => setCustomerData(prev => ({ ...prev, phone: e.target.value }))}
+                onChange={(e) =>
+                  setCustomerData((prev) => ({
+                    ...prev,
+                    phone: e.target.value,
+                  }))
+                }
               />
             </div>
           </div>
@@ -216,7 +252,9 @@ ${note ? `📝 หมายเหตุ: ${note}` : ''}
               id="lineId"
               placeholder="saifahscreen"
               value={customerData.lineId}
-              onChange={(e) => setCustomerData(prev => ({ ...prev, lineId: e.target.value }))}
+              onChange={(e) =>
+                setCustomerData((prev) => ({ ...prev, lineId: e.target.value }))
+              }
             />
           </div>
         </CardContent>
@@ -237,7 +275,9 @@ ${note ? `📝 หมายเหตุ: ${note}` : ''}
                 ประเภท
               </Label>
               <div className="p-3 bg-muted rounded-md capitalize">
-                {productConfig.productType === 'premium' ? 'Premium' : 'Oversize'}
+                {productConfig.productType === "premium"
+                  ? "Premium"
+                  : "Oversize"}
               </div>
             </div>
             <div className="space-y-2">
@@ -246,8 +286,8 @@ ${note ? `📝 หมายเหตุ: ${note}` : ''}
                 สีเสื้อ
               </Label>
               <div className="p-3 bg-muted rounded-md flex items-center gap-2">
-                <div 
-                  className="w-4 h-4 rounded-full border" 
+                <div
+                  className="w-4 h-4 rounded-full border"
                   style={{ backgroundColor: productConfig.tshirt.colorValue }}
                 />
                 {productConfig.tshirt.name}
@@ -271,7 +311,10 @@ ${note ? `📝 หมายเหตุ: ${note}` : ''}
               ))}
             </div>
             <div className="text-center text-sm text-muted-foreground pt-2">
-              รวมทั้งหมด: <span className="font-semibold text-foreground">{totalQuantity} ตัว</span>
+              รวมทั้งหมด:{" "}
+              <span className="font-semibold text-foreground">
+                {totalQuantity} ตัว
+              </span>
             </div>
           </div>
         </CardContent>
@@ -286,11 +329,15 @@ ${note ? `📝 หมายเหตุ: ${note}` : ''}
         </CardHeader>
         <CardContent className="space-y-2">
           <div className="flex justify-between text-sm">
-            <span className="text-muted-foreground">ราคาเสื้อ/ตัว (สำหรับ {totalQuantity} ตัว)</span>
+            <span className="text-muted-foreground">
+              ราคาเสื้อ/ตัว (สำหรับ {totalQuantity} ตัว)
+            </span>
             <span>{basePricePerItem.toLocaleString()} บาท</span>
           </div>
           <div className="flex justify-between text-sm">
-            <span className="text-muted-foreground">ค่าสกรีนเพิ่ม ({extraSpots} จุด)</span>
+            <span className="text-muted-foreground">
+              ค่าสกรีนเพิ่ม ({extraSpots} จุด)
+            </span>
             <span>+{extraSpotPrice.toLocaleString()} บาท</span>
           </div>
           <Separator />
@@ -334,7 +381,8 @@ ${note ? `📝 หมายเหตุ: ${note}` : ''}
         </CardHeader>
         <CardContent className="space-y-4">
           <p className="text-sm text-muted-foreground">
-            อัปโหลดไฟล์ซิปที่มีโลโก้, ฟอนต์, รูปภาพ เพื่อให้แอนมินทำงานได้ง่ายขึ้น
+            อัปโหลดไฟล์ซิปที่มีโลโก้, ฟอนต์, รูปภาพ
+            เพื่อให้แอนมินทำงานได้ง่ายขึ้น
           </p>
 
           <input
@@ -357,7 +405,7 @@ ${note ? `📝 หมายเหตุ: ${note}` : ''}
             ) : (
               <Upload className="h-4 w-4" />
             )}
-            {isUploading ? 'กำลังอัปโหลด...' : 'อัปโหลดไฟล์ซิป'}
+            {isUploading ? "กำลังอัปโหลด..." : "อัปโหลดไฟล์ซิป"}
           </Button>
 
           {uploadedFiles.length > 0 && (

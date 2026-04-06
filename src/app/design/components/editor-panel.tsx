@@ -1,13 +1,18 @@
-'use client';
+"use client";
 
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { SlidersHorizontal, ShoppingBag } from 'lucide-react';
-import type { DesignElement, ProductConfiguration, ActiveTool, OrderItem } from './design-tool';
-import ProductPanel from './product-panel';
-import AddElementsPanel from './add-elements-panel';
-import LayersPanel from './layers-panel';
-import InspectorPanel from './inspector-panel';
-import OrderPanel from './order-panel';
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { SlidersHorizontal, ShoppingBag } from "lucide-react";
+import type {
+  DesignElement,
+  ProductConfiguration,
+  ActiveTool,
+  OrderItem,
+} from "./design-tool";
+import ProductPanel from "./product-panel";
+import AddElementsPanel from "./add-elements-panel";
+import LayersPanel from "./layers-panel";
+import InspectorPanel from "./inspector-panel";
+import OrderPanel from "./order-panel";
 
 interface EditorPanelProps {
   activeTool: ActiveTool;
@@ -18,7 +23,11 @@ interface EditorPanelProps {
   onAddText: (text: string) => void;
   elements: DesignElement[];
   selectedElement: DesignElement | null;
-  updateElement: (id: string, props: Partial<DesignElement>, pushToHistory?: boolean) => void;
+  updateElement: (
+    id: string,
+    props: Partial<DesignElement>,
+    pushToHistory?: boolean,
+  ) => void;
   deleteElement: (id: string) => void;
   bringToFront: (id: string) => void;
   sendToBack: (id: string) => void;
@@ -30,7 +39,7 @@ interface EditorPanelProps {
   addOrder: (colorName: string, colorValue: string, imageUrl: string) => void;
   removeOrder: (id: string) => void;
   updateOrderSize: (orderId: string, size: string, quantity: number) => void;
-  currentTshirt: { name: string, colorValue: string, imageUrl: string };
+  currentTshirt: { name: string; colorValue: string; imageUrl: string };
 }
 
 export default function EditorPanel({
@@ -55,13 +64,21 @@ export default function EditorPanel({
   updateOrderSize,
   currentTshirt,
 }: EditorPanelProps) {
-  
   switch (activeTool) {
-    case 'Product':
-      return <ProductPanel config={config} setConfig={setConfig} orders={orders} addOrder={addOrder} removeOrder={removeOrder} updateOrderSize={updateOrderSize} />;
-    case 'Elements':
+    case "Product":
+      return (
+        <ProductPanel
+          config={config}
+          setConfig={setConfig}
+          orders={orders}
+          addOrder={addOrder}
+          removeOrder={removeOrder}
+          updateOrderSize={updateOrderSize}
+        />
+      );
+    case "Elements":
       return <AddElementsPanel onAddText={onAddText} onAddImage={onAddImage} />;
-    case 'Layers':
+    case "Layers":
       return (
         <LayersPanel
           elements={elements}
@@ -74,9 +91,10 @@ export default function EditorPanel({
           onDeleteElement={deleteElement}
         />
       );
-    case 'Inspector':
+    case "Inspector":
       if (selectedElement) {
-          return <InspectorPanel
+        return (
+          <InspectorPanel
             key={selectedElement.id} // Force re-mount on element change
             selectedElement={selectedElement}
             updateElement={updateElement}
@@ -85,15 +103,27 @@ export default function EditorPanel({
             sendToBack={sendToBack}
             duplicateElement={duplicateElement}
           />
+        );
       }
       return (
-            <div className="flex-1 flex flex-col items-center justify-center text-center text-muted-foreground p-4 h-full">
-              <SlidersHorizontal className="w-12 h-12 mb-4" />
-              <h3 className="font-semibold text-foreground">เครื่องมือแก้ไข</h3>
-              <p className="text-sm">เลือกองค์ประกอบบน Canvas เพื่อเริ่มแก้ไขคุณสมบัติ</p>
-          </div>
+        <div className="flex-1 flex flex-col items-center justify-center text-center text-muted-foreground p-4 h-full">
+          <SlidersHorizontal className="w-12 h-12 mb-4" />
+          <h3 className="font-semibold text-foreground">เครื่องมือแก้ไข</h3>
+          <p className="text-sm">
+            เลือกองค์ประกอบบน Canvas เพื่อเริ่มแก้ไขคุณสมบัติ
+          </p>
+        </div>
       );
     default:
-      return <ProductPanel config={config} setConfig={setConfig} orders={orders} addOrder={addOrder} removeOrder={removeOrder} updateOrderSize={updateOrderSize} />;
+      return (
+        <ProductPanel
+          config={config}
+          setConfig={setConfig}
+          orders={orders}
+          addOrder={addOrder}
+          removeOrder={removeOrder}
+          updateOrderSize={updateOrderSize}
+        />
+      );
   }
 }
