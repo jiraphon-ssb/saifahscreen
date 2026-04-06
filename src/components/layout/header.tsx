@@ -1,6 +1,9 @@
 'use client';
 
+import { useState, useEffect } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import { Menu, ChevronDown, Facebook, Instagram, Youtube, Mail } from "lucide-react";
@@ -14,7 +17,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-
 
 const socialLinks = [
     { href: "https://www.facebook.com/saifahscreen", icon: Facebook, label: "Facebook" },
@@ -47,58 +49,85 @@ const moreLinks = [
     { href: "/faq", label: "คำถามที่พบบ่อย" },
 ];
 
-function TopHeader() {
+function TopHeader({ isScrolled }: { isScrolled: boolean }) {
     return (
-        <div className="hidden lg:block bg-secondary/50 border-b border-border/30 transition-colors">
-            <div className="container flex items-center justify-between h-9 text-xs text-muted-foreground font-medium">
-                <p className="tracking-wide">SAIFAH: บริการออกแบบและผลิตเสื้อครบวงจร</p>
-                <div className="flex items-center gap-3">
-                    {socialLinks.slice(0, 4).map((social) => (
-                        <Link 
-                            key={social.label}
-                            href={social.href} 
-                            target="_blank" 
-                            rel="noopener noreferrer" 
-                            className="text-muted-foreground hover:text-primary transition-colors" 
-                            prefetch={false}
-                        >
-                            <social.icon className="h-4 w-4" />
-                            <span className="sr-only">{social.label}</span>
-                        </Link>
-                    ))}
-                </div>
-            </div>
-        </div>
+        <AnimatePresence>
+            {!isScrolled && (
+                <motion.div 
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: 36, opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    className="hidden lg:block bg-secondary/50 border-b border-border/30 w-full overflow-hidden"
+                >
+                    <div className="container flex items-center justify-between h-9 text-xs text-muted-foreground font-medium">
+                        <p className="tracking-wide">SAIFAH: บริการออกแบบและผลิตเสื้อครบวงจร</p>
+                        <div className="flex items-center gap-3">
+                            {socialLinks.slice(0, 4).map((social) => (
+                                <Link 
+                                    key={social.label}
+                                    href={social.href} 
+                                    target="_blank" 
+                                    rel="noopener noreferrer" 
+                                    className="text-muted-foreground hover:text-primary transition-colors hover:scale-110" 
+                                    prefetch={false}
+                                >
+                                    <social.icon className="h-4 w-4" />
+                                    <span className="sr-only">{social.label}</span>
+                                </Link>
+                            ))}
+                        </div>
+                    </div>
+                </motion.div>
+            )}
+        </AnimatePresence>
     )
 }
 
 export default function Header() {
+  const [isScrolled, setIsScrolled] = useState(false);
+  const pathname = usePathname();
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 10);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   return (
-    <header
-      className="w-full bg-background/95 backdrop-blur-md z-50 sticky top-0 border-b border-border/30 shadow-[0_1px_3px_rgba(0,0,0,0.03)] transition-all duration-300"
+    <motion.header
+      initial={{ y: -100 }}
+      animate={{ y: 0 }}
+      transition={{ duration: 0.5, ease: "easeOut" }}
+      className={`w-full z-50 sticky top-0 transition-all duration-300 ${
+        isScrolled 
+          ? "bg-background/80 backdrop-blur-xl border-b border-border/20 shadow-[0_4px_30px_rgba(0,0,0,0.05)]" 
+          : "bg-background border-b border-border/30"
+      }`}
     >
-      <TopHeader />
+      <TopHeader isScrolled={isScrolled} />
       <div className="container flex h-16 items-center">
           <div className="hidden lg:flex flex-1 items-center justify-between">
             <div className="flex items-center gap-3">
-                <Link href="/" className="flex items-center gap-2 shrink-0">
-                    <Logo className="h-9 w-auto" />
+                <Link href="/" className="flex items-center gap-2 shrink-0 group">
+                    <Logo className="h-9 w-auto group-hover:scale-105 transition-transform" />
                 </Link>
-                <Separator orientation="vertical" className="h-6" />
+                <Separator orientation="vertical" className="h-6 mx-2" />
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                         <Button 
                           size="sm" 
                           variant="ghost"
-                          className="text-sm font-medium gap-1 h-9 px-3 hover:bg-secondary"
+                          className="text-sm font-medium gap-1 h-9 px-3 hover:bg-secondary/80 rounded-xl"
                         >
                             หมวดหมู่
                             <ChevronDown className="h-3 w-3" />
                         </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent className="w-52" align="start">
+                    <DropdownMenuContent className="w-52 rounded-2xl shadow-xl border-border/50" align="start">
                         {categories.map((cat) => (
-                        <DropdownMenuItem key={cat.label} asChild className="cursor-pointer">
+                        <DropdownMenuItem key={cat.label} asChild className="cursor-pointer rounded-xl hover:bg-secondary">
                             <Link href={cat.href}>{cat.label}</Link>
                         </DropdownMenuItem>
                         ))}
@@ -107,31 +136,33 @@ export default function Header() {
             </div>
             
             <nav className="flex items-center gap-x-1">
-                {navLinks.map(link => (
-                    <Button key={link.href} variant="ghost" asChild className="text-sm font-medium hover:bg-secondary px-4">
-                        <Link href={link.href}>
-                            {link.label}
-                        </Link>
-                    </Button>
+                {navLinks.map((link, idx) => (
+                    <motion.div key={link.href} initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 * idx }}>
+                        <Button variant="ghost" asChild className={`text-sm font-medium hover:bg-secondary/80 px-4 rounded-xl transition-all hover:scale-105 ${pathname === link.href ? 'bg-primary/10 text-primary' : ''}`}>
+                            <Link href={link.href}>
+                                {link.label}
+                            </Link>
+                        </Button>
+                    </motion.div>
                 ))}
                 
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" className="text-sm font-medium hover:bg-secondary px-4">
+                        <Button variant="ghost" className="text-sm font-medium hover:bg-secondary/80 px-4 rounded-xl transition-all">
                             ข้อมูลเพิ่มเติม
                             <ChevronDown className="ml-1 h-3 w-3" />
                         </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent className="w-48">
+                    <DropdownMenuContent className="w-48 rounded-2xl shadow-xl border-border/50">
                         {moreLinks.map(link => (
-                            <DropdownMenuItem key={link.href} asChild className="cursor-pointer">
+                            <DropdownMenuItem key={link.href} asChild className="cursor-pointer rounded-xl hover:bg-secondary">
                                 <Link href={link.href}>{link.label}</Link>
                             </DropdownMenuItem>
                         ))}
                     </DropdownMenuContent>
                 </DropdownMenu>
 
-                <Button asChild className="text-sm font-medium ml-2">
+                <Button asChild className="text-sm font-semibold ml-4 rounded-full px-6 shadow-md hover:shadow-lg hover:scale-105 transition-all bg-primary hover:bg-primary/90">
                     <Link href="/contact">
                         ติดต่อเรา
                     </Link>
@@ -143,12 +174,12 @@ export default function Header() {
             <div className="flex-1 flex justify-start">
               <Sheet>
                   <SheetTrigger asChild>
-                      <Button variant="ghost" size="icon" className="w-10 h-10">
+                      <Button variant="ghost" size="icon" className="w-10 h-10 rounded-xl hover:bg-secondary">
                           <Menu className="h-5 w-5" />
                           <span className="sr-only">Toggle Menu</span>
                       </Button>
                   </SheetTrigger>
-                  <SheetContent side="left" className="w-[300px] sm:w-[350px]">
+                  <SheetContent side="left" className="w-[300px] sm:w-[350px] border-r border-border/50 bg-background/95 backdrop-blur-xl">
                       <SheetHeader className="sr-only">
                           <SheetTitle>Menu</SheetTitle>
                           <SheetDescription>Main navigation menu</SheetDescription>
@@ -163,12 +194,12 @@ export default function Header() {
                               <Link
                                   key={label}
                                   href={href}
-                                  className="text-base font-medium px-2 py-2 rounded-md hover:bg-secondary transition-colors"
+                                  className="text-base font-medium px-4 py-3 rounded-xl hover:bg-secondary transition-colors"
                               >
                                   {label}
                               </Link>
                               ))}
-                              <Link href="/contact" className="text-base font-medium px-2 py-2 rounded-md hover:bg-secondary transition-colors">
+                              <Link href="/contact" className="text-base font-medium px-4 py-3 rounded-xl hover:bg-secondary transition-colors">
                                   ติดต่อเรา
                               </Link>
                               
@@ -179,7 +210,7 @@ export default function Header() {
                               <Link
                                   key={label}
                                   href={href}
-                                  className="text-sm text-muted-foreground px-2 py-2 rounded-md hover:bg-secondary transition-colors"
+                                  className="text-sm text-muted-foreground px-4 py-2 rounded-xl hover:bg-secondary transition-colors"
                               >
                                   {label}
                               </Link>
@@ -188,14 +219,14 @@ export default function Header() {
                               <Separator className="my-4"/>
                               
                               <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2 px-2">ติดตามเรา</p>
-                              <div className="flex gap-3 px-2">
+                              <div className="flex gap-3 px-2 mt-2">
                                   {socialLinks.map((social) => (
                                       <Link 
                                           key={social.label}
                                           href={social.href} 
                                           target="_blank" 
                                           rel="noopener noreferrer" 
-                                          className="p-2 rounded-full hover:bg-secondary transition-colors"
+                                          className="p-3 rounded-full hover:bg-secondary shadow-sm hover:scale-110 transition-all"
                                       >
                                           <social.icon className="h-5 w-5" />
                                       </Link>
@@ -207,12 +238,12 @@ export default function Header() {
               </Sheet>
             </div>
 
-            <Link href="/" className="flex-shrink-0">
-                <Logo className="h-9 w-auto" />
+            <Link href="/" className="flex-shrink-0 group">
+                <Logo className="h-9 w-auto hover:scale-105 transition-transform" />
             </Link>
 
             <div className="flex-1 flex justify-end">
-                <Button variant="ghost" size="sm" asChild className="text-sm font-medium">
+                <Button size="sm" asChild className="text-sm font-semibold rounded-full shadow-md">
                     <Link href="/contact">
                         ติดต่อ
                     </Link>
@@ -220,6 +251,6 @@ export default function Header() {
             </div>
         </div>
       </div>
-    </header>
+    </motion.header>
   );
 }

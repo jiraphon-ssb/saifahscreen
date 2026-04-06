@@ -44,7 +44,7 @@ export default function SizeChart() {
     return (
         <div className="p-8 rounded-lg border bg-card shadow-sm">
             <CardHeader className="p-0 mb-6">
-                <CardTitle className="font-headline text-3xl">ตารางไซส์</CardTitle>
+                <CardTitle className="font-headline text-3xl font-bold">ตารางไซส์</CardTitle>
                 <CardDescription className="mt-2">ตรวจสอบขนาดเสื้อแต่ละประเภทให้ถูกต้องก่อนสั่งซื้อ</CardDescription>
             </CardHeader>
             <CardContent className="p-0">

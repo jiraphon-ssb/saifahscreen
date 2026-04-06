@@ -4,6 +4,7 @@ import { useState, useCallback, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { X, Undo2, Redo2, Share2 } from 'lucide-react';
 import Link from 'next/link';
+import { motion } from 'framer-motion';
 
 import { useToast } from '@/hooks/use-toast';
 import { useHistory } from '@/hooks/use-history';
@@ -17,8 +18,8 @@ import { Separator } from '@/components/ui/separator';
 import CanvasArea from "./canvas-area";
 import MainToolbar from './main-toolbar';
 import EditorPanel from './editor-panel';
-import ShareDialog from './share-dialog';
 import LZString from 'lz-string';
+import { setIDB } from '@/lib/idb';
 
 export type DesignElement = {
   id: string;
@@ -47,6 +48,7 @@ export type DesignElement = {
   strokeColor?: string;
   strokeWidth?: number;
   textShadow?: string;
+  curve?: number;
 
   filters?: {
       brightness: number;
@@ -69,12 +71,25 @@ export type ProductConfiguration = {
     };
 }
 
+export type OrderItem = {
+    id: string;
+    tshirt: {
+        name: string;
+        colorValue: string;
+        imageUrl: string;
+    };
+    sizes: {
+        [key: string]: number;
+    };
+}
+
 export type DesignState = {
     productConfig: ProductConfiguration;
     elements: DesignElement[];
+    orders: OrderItem[];
 }
 
-export type ActiveTool = 'Product' | 'Elements' | 'Layers' | 'Inspector';
+export type ActiveTool = 'Product' | 'Elements' | 'Layers' | 'Inspector' | 'Orders';
 
 const defaultTshirt = PlaceHolderImages.find(p => p.id === 't-shirt-mockup-white-saifah');
 
@@ -83,11 +98,12 @@ const initialDesignState: DesignState = {
         productType: 'premium',
         tshirt: {
             name: 'White',
-            imageUrl: defaultTshirt?.imageUrl || '/images/t-shirt-mockup-white-saifah.webp',
+            imageUrl: defaultTshirt?.imageUrl || '/images/t-shirt-mockup-white-saifah.png',
             colorValue: '#FFFFFF',
         }
     },
     elements: [],
+    orders: [],
 }
 
 interface DesignToolProps {
@@ -101,8 +117,9 @@ export default function DesignTool({ designId }: DesignToolProps) {
 
   const [selectedElementId, setSelectedElementId] = useState<string | null>(null);
   const [activeTool, setActiveTool] = useState<ActiveTool>('Product');
+  const [mobileActiveTool, setMobileActiveTool] = useState<ActiveTool>('Product');
   const [isMobilePanelOpen, setMobilePanelOpen] = useState(false);
-  const [isShareDialogOpen, setShareDialogOpen] = useState(false);
+  const [hideMockup, setHideMockup] = useState(false);
   
   const [designState, setDesignState, undo, redo, canUndo, canRedo] = useHistory<DesignState>(initialDesignState);
 
@@ -117,9 +134,19 @@ export default function DesignTool({ designId }: DesignToolProps) {
               const elements = typeof fetchedDesign.designConfiguration === 'string' 
                 ? JSON.parse(fetchedDesign.designConfiguration) 
                 : fetchedDesign.designConfiguration;
-              const productConfig = fetchedDesign.productConfiguration;
+              
+              // Migrate old .webp mockup URLs to .png
+              let productConfig = fetchedDesign.productConfiguration;
+              if (productConfig?.tshirt?.imageUrl?.endsWith('.webp')) {
+                productConfig.tshirt.imageUrl = productConfig.tshirt.imageUrl.replace('.webp', '.png');
+              }
+
               if (Array.isArray(elements) && productConfig) {
-                 const newDesignState = { productConfig, elements };
+                 const newDesignState: DesignState = { 
+                   productConfig, 
+                   elements,
+                   orders: fetchedDesign.orders || []
+                 };
                  setDesignState(newDesignState, true);
               }
             }
@@ -235,6 +262,35 @@ export default function DesignTool({ designId }: DesignToolProps) {
     });
   }
   
+  const addOrder = (colorName: string, colorValue: string, imageUrl: string) => {
+    setDesignState(prev => {
+        const id = `order-${Date.now()}`;
+        const newOrder: OrderItem = {
+            id,
+            tshirt: { name: colorName, colorValue, imageUrl },
+            sizes: { 'S': 0, 'M': 0, 'L': 0, 'XL': 0, '2XL': 0 }
+        };
+        return { ...prev, orders: [...prev.orders, newOrder] };
+    });
+  };
+
+  const removeOrder = (id: string) => {
+    setDesignState(prev => ({
+        ...prev,
+        orders: prev.orders.filter(o => o.id !== id)
+    }));
+  };
+
+  const updateOrderSize = (orderId: string, size: string, quantity: number) => {
+    setDesignState(prev => ({
+        ...prev,
+        orders: prev.orders.map(o => o.id === orderId ? {
+            ...o,
+            sizes: { ...o.sizes, [size]: quantity }
+        } : o)
+    }), true); // Don't push to history for every keystroke if needed, but here simple is better
+  };
+
   const toggleVisibility = (id: string) => {
       const element = designState.elements.find(el => el.id === id);
       if (!element) return;
@@ -261,7 +317,7 @@ export default function DesignTool({ designId }: DesignToolProps) {
               height: 'auto',
               fontFamily: 'Inter, sans-serif',
               fontSize: 48,
-              fontWeight: 700,
+              fontWeight: 600,
               lineHeight: 1.2,
               letterSpacing: 0,
               textAlign: 'center',
@@ -295,42 +351,90 @@ export default function DesignTool({ designId }: DesignToolProps) {
     duplicateElement: duplicateElement,
     setSelectedElementId: handleSetSelectedElement,
     onToggleVisibility: toggleVisibility,
+    orders: designState.orders,
+    addOrder,
+    removeOrder,
+    updateOrderSize,
+    currentTshirt: designState.productConfig.tshirt,
   };
 
-  const handleShare = () => {
-    setShareDialogOpen(true);
+  const handleShare = async () => {
+    try {
+        const rawData = JSON.stringify({
+            productConfiguration: designState.productConfig,
+            designConfiguration: designState.elements,
+            orders: designState.orders,
+        });
+        await setIDB('saifah_pending_summary', rawData);
+        window.location.href = `/summary`;
+    } catch (e) {
+        console.error("Failed to save and redirect:", e);
+    }
   };
 
-  const handleExport = () => {
-    setShareDialogOpen(true);
-  };
+  // Keyboard Shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement;
+      const isInput = target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable;
+      if (isInput) return;
+
+      // Delete / Backspace → delete selected element
+      if ((e.key === 'Delete' || e.key === 'Backspace') && selectedElementId) {
+        e.preventDefault();
+        deleteElement(selectedElementId);
+      }
+      // Ctrl/Cmd + Z → Undo
+      if ((e.metaKey || e.ctrlKey) && e.key === 'z' && !e.shiftKey) {
+        e.preventDefault();
+        undo();
+      }
+      // Ctrl/Cmd + Shift + Z → Redo
+      if ((e.metaKey || e.ctrlKey) && e.key === 'z' && e.shiftKey) {
+        e.preventDefault();
+        redo();
+      }
+      // Ctrl/Cmd + D → Duplicate
+      if ((e.metaKey || e.ctrlKey) && e.key === 'd' && selectedElementId) {
+        e.preventDefault();
+        duplicateElement(selectedElementId);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [selectedElementId, deleteElement, undo, redo, duplicateElement]);
 
   return (
     <TooltipProvider>
-    <div className="h-screen w-screen overflow-hidden bg-background text-foreground flex flex-col">
-      <header className="flex h-14 shrink-0 items-center justify-between border-b bg-background px-3 md:px-4 z-30">
-        <div className="flex items-center gap-2 md:gap-3">
-            <Button variant="ghost" size="icon" className="h-8 w-8 md:h-9 md:w-9" asChild>
+    <div className="h-[100dvh] w-[100dvw] overflow-hidden bg-background text-foreground flex flex-col">
+      <motion.header 
+        initial={{ y: -50, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.4 }}
+        className="flex h-14 shrink-0 items-center justify-between border-b bg-card px-2 md:px-6 z-30 shadow-sm"
+      >
+        <div className="flex items-center gap-2 md:gap-4">
+            <Button variant="ghost" size="icon" className="h-9 w-9 rounded-full hover:bg-zinc-100" asChild>
               <Link href="/">
-                <X className="h-4 w-4" />
+                <X className="h-5 w-5 text-zinc-950" />
                 <span className="sr-only">ปิด</span>
               </Link>
             </Button>
-            <div className="h-6 w-px bg-border hidden md:block" />
-            <h1 className="font-semibold text-sm md:text-base hidden md:block">ออกแบบ</h1>
-            <span className="text-xs text-muted-foreground hidden md:inline">
-              {designState.elements.length} องค์ประกอบ
-            </span>
+            <div className="h-6 w-px bg-zinc-200 hidden md:block" />
+            <h1 className="font-black text-sm md:text-base hidden md:block tracking-tight text-zinc-950 uppercase">SAIFAH DESIGN STUDIO</h1>
+            <span className="text-[10px] font-bold px-2 py-0.5 bg-zinc-950 rounded-full text-white hidden sm:inline ml-2">
+               {designState.elements.length} LAYERS
+             </span>
         </div>
 
-        <div className="flex items-center gap-1 md:gap-2">
-            <div className="hidden md:flex items-center gap-1 mr-2">
+        <div className="flex items-center gap-1 md:gap-3">
+            <div className="hidden md:flex items-center gap-1 mr-2 bg-zinc-100 rounded-lg p-1">
               <Tooltip>
                   <TooltipTrigger asChild>
                       <Button 
                           variant="ghost" 
                           size="icon" 
-                          className="h-8 w-8" 
+                          className="h-8 w-8 rounded-md" 
                           onClick={undo} 
                           disabled={!canUndo}
                       >
@@ -344,7 +448,7 @@ export default function DesignTool({ designId }: DesignToolProps) {
                       <Button 
                           variant="ghost" 
                           size="icon" 
-                          className="h-8 w-8" 
+                          className="h-8 w-8 rounded-md" 
                           onClick={redo} 
                           disabled={!canRedo}
                       >
@@ -355,92 +459,124 @@ export default function DesignTool({ designId }: DesignToolProps) {
               </Tooltip>
             </div>
             
-            <Separator orientation="vertical" className="h-6 hidden md:block" />
+            <Separator orientation="vertical" className="h-6 hidden md:block mr-2" />
             
-            <Button size="sm" className="gap-2" onClick={handleShare}>
+            <Button size="sm" className="gap-2 rounded-full font-semibold shadow-md hover:shadow-lg transition-all" onClick={handleShare}>
               <Share2 className="h-4 w-4" />
-              <span className="hidden md:inline">แชร์</span>
+              <span className="hidden md:inline">แชร์แบบนี้</span>
             </Button>
         </div>
-      </header>
+      </motion.header>
       
-      <div className="hidden md:flex flex-row flex-1 min-h-0">
-        <MainToolbar 
-          activeTool={activeTool} 
-          setActiveTool={setActiveTool} 
-          selectedElementId={selectedElementId}
-        />
-        <aside className="flex h-full w-[320px] shrink-0 flex-col border-r border-border/50 bg-background">
-            <ScrollArea className="flex-1 min-h-0">
-                <EditorPanel 
-                    activeTool={activeTool}
-                    setActiveTool={setActiveTool}
-                    config={designState.productConfig}
-                    setConfig={setProductConfig}
-                    onAddImage={addImageToCanvas}
-                    onAddText={addTextToCanvas}
-                    {...commonEditorProps}
-                />
+      <div className="hidden md:flex flex-row flex-1 h-full min-h-0 bg-secondary/10">
+        <motion.div initial={{ x: -50, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ duration: 0.5 }}>
+           <MainToolbar 
+             activeTool={activeTool} 
+             setActiveTool={setActiveTool} 
+             selectedElementId={selectedElementId}
+           />
+        </motion.div>
+        
+        <motion.aside 
+           initial={{ x: -100, opacity: 0 }} 
+           animate={{ x: 0, opacity: 1 }} 
+           transition={{ duration: 0.5, delay: 0.1, type: 'spring', damping: 20 }}
+           className="flex h-full w-[360px] shrink-0 flex-col border-r border-white/10 glass-panel z-30 overflow-hidden"
+        >
+            <ScrollArea className="flex-1">
+                    <EditorPanel 
+                        activeTool={activeTool}
+                        setActiveTool={setActiveTool}
+                        config={designState.productConfig}
+                        setConfig={setProductConfig}
+                        onAddImage={addImageToCanvas}
+                        onAddText={addTextToCanvas}
+                        {...commonEditorProps}
+                        orders={designState.orders}
+                        addOrder={addOrder}
+                        removeOrder={removeOrder}
+                        updateOrderSize={updateOrderSize}
+                        currentTshirt={designState.productConfig.tshirt}
+                    />
             </ScrollArea>
-        </aside>
-        <CanvasArea 
-            elements={designState.elements} 
-            imageUrl={designState.productConfig.tshirt.imageUrl}
-            selectedElementId={selectedElementId}
-            setSelectedElementId={handleSetSelectedElement}
-            updateElement={updateElement}
-            undo={undo}
-            redo={redo}
-            canUndo={canUndo}
-            canRedo={canRedo}
-        />
+        </motion.aside>
+        
+        <motion.div 
+           initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8 }}
+           className="flex-1 relative h-full w-full bg-secondary/5"
+        >
+           <CanvasArea 
+                elements={designState.elements} 
+                imageUrl={designState.productConfig.tshirt.imageUrl}
+                selectedElementId={selectedElementId}
+                setSelectedElementId={handleSetSelectedElement}
+                updateElement={updateElement}
+                deleteElement={deleteElement}
+                duplicateElement={duplicateElement}
+                bringToFront={bringToFront}
+                sendToBack={sendToBack}
+                undo={undo}
+                redo={redo}
+                canUndo={canUndo}
+                canRedo={canRedo}
+                hideMockup={hideMockup}
+            />
+        </motion.div>
       </div>
 
       <div className="flex md:hidden flex-col flex-1 min-h-0">
          <CanvasArea
-            elements={designState.elements} 
-            imageUrl={designState.productConfig.tshirt.imageUrl}
-            selectedElementId={selectedElementId}
-            setSelectedElementId={handleSetSelectedElement}
-            updateElement={updateElement}
-            undo={undo}
-            redo={redo}
-            canUndo={canUndo}
-            canRedo={canRedo}
-         />
+             elements={designState.elements} 
+             imageUrl={designState.productConfig.tshirt.imageUrl}
+             selectedElementId={selectedElementId}
+             setSelectedElementId={handleSetSelectedElement}
+             updateElement={updateElement}
+             deleteElement={deleteElement}
+             duplicateElement={duplicateElement}
+             bringToFront={bringToFront}
+             sendToBack={sendToBack}
+             undo={undo}
+             redo={redo}
+             canUndo={canUndo}
+             canRedo={canRedo}
+             hideMockup={hideMockup}
+           />
          <MainToolbar
             activeTool={activeTool}
             setActiveTool={handleToolSelectForMobile}
             selectedElementId={selectedElementId}
          />
          <Sheet open={isMobilePanelOpen} onOpenChange={setMobilePanelOpen}>
-           <SheetContent side="bottom" className="h-[65vh] flex flex-col p-0" onOpenAutoFocus={(e) => e.preventDefault()}>
-             <SheetHeader className="p-4 border-b flex-shrink-0">
-                <SheetTitle className="text-base">{getToolName(activeTool)}</SheetTitle>
-                <SheetDescription className="sr-only">
-                    แก้ไข {getToolName(activeTool)}
-                </SheetDescription>
-             </SheetHeader>
+            <SheetContent side="bottom" className="h-[60vh] flex flex-col p-0 rounded-t-[28px] overflow-hidden border-none" onOpenAutoFocus={(e) => e.preventDefault()}>
+              {/* Drag Handle */}
+              <div className="flex justify-center pt-3 pb-1 shrink-0">
+                <div className="w-10 h-1 rounded-full bg-zinc-300" />
+              </div>
+              <SheetHeader className="px-4 pb-3 border-b flex-shrink-0">
+                 <SheetTitle className="text-base font-bold">{getToolName(activeTool)}</SheetTitle>
+                 <SheetDescription className="sr-only">
+                     แก้ไข {getToolName(activeTool)}
+                 </SheetDescription>
+              </SheetHeader>
              <ScrollArea className="flex-1 min-h-0">
-                 <EditorPanel
-                    activeTool={activeTool}
-                    setActiveTool={setActiveTool}
-                    config={designState.productConfig}
-                    setConfig={setProductConfig}
-                    onAddImage={addImageToCanvas}
-                    onAddText={addTextToCanvas}
-                    {...commonEditorProps}
-                 />
+                  <EditorPanel
+                     activeTool={activeTool}
+                     setActiveTool={setActiveTool}
+                     config={designState.productConfig}
+                     setConfig={setProductConfig}
+                     onAddImage={addImageToCanvas}
+                     onAddText={addTextToCanvas}
+                     {...commonEditorProps}
+                     orders={designState.orders}
+                     addOrder={addOrder}
+                     removeOrder={removeOrder}
+                     updateOrderSize={updateOrderSize}
+                     currentTshirt={designState.productConfig.tshirt}
+                  />
              </ScrollArea>
            </SheetContent>
           </Sheet>
        </div>
-
-      <ShareDialog
-        open={isShareDialogOpen}
-        onOpenChange={setShareDialogOpen}
-        designState={designState}
-      />
     </div>
     </TooltipProvider>
   );

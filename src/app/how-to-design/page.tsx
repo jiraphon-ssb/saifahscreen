@@ -63,7 +63,7 @@ export default function HowToDesignPage() {
             description: "เพื่อคุณภาพงานสกรีนระดับ HD ให้อัปโหลดไฟล์ PNG พื้นหลังโปร่งใส ที่มีความละเอียด 300 DPI ขึ้นไปจะดีที่สุด",
         },
         {
-            icon: <Palette className="h-6 w-6 text-blue-500" />,
+            icon: <Palette className="h-6 w-6 text-primary" />,
             title: "คอนทราสต์คือราชา",
             description: "เลือกสีข้อความและกราฟิกให้ตัดกับสีเสื้ออย่างชัดเจน (เช่น ตัวอักษรขาวบนเสื้อดำ) เพื่อให้ดีไซน์ของคุณโดดเด่นและอ่านง่าย",
         },
@@ -111,7 +111,10 @@ export default function HowToDesignPage() {
     ];
 
     return (
-        <div className="bg-background text-foreground">
+        <div className="bg-gradient-to-b from-background via-secondary/10 to-background text-foreground min-h-screen relative overflow-hidden">
+            <div className="absolute top-[20%] left-[-10%] w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
+            <div className="absolute top-[60%] right-[-10%] w-[600px] h-[600px] bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
+            
             {/* Hero Section */}
             <section className="relative w-full h-[50vh] flex items-center justify-center text-center text-white overflow-hidden bg-black">
                 <div className="absolute inset-0 w-full h-full bg-black/60 z-10" />
@@ -125,14 +128,14 @@ export default function HowToDesignPage() {
                         priority
                     />
                 )}
-                <div className="relative z-20 container px-4 md:px-6 space-y-4">
-                    <AnimateOnScroll delay={100}>
-                        <Badge variant="secondary" className="bg-primary/20 text-primary border-primary/30 text-base py-1 px-4 hover:bg-primary/20">THE ULTIMATE GUIDE</Badge>
+                <div className="relative z-20 container px-4 md:px-6 space-y-6 mt-12">
+                    <AnimateOnScroll delay={100} className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/20 backdrop-blur-md text-white text-sm font-semibold uppercase tracking-widest mb-4">
+                        <Badge variant="outline" className="text-white border-white/30 text-base py-1 px-4 hover:bg-white/10 uppercase tracking-widest">THE ULTIMATE GUIDE</Badge>
                     </AnimateOnScroll>
-                    <AnimateOnScroll as="h1" delay={200} className="text-4xl font-bold tracking-tighter font-headline sm:text-5xl md:text-6xl" style={{textShadow: '0 2px 4px rgba(0,0,0,0.5)'}}>
+                    <AnimateOnScroll as="h1" delay={200} className="text-4xl font-semibold tracking-tight font-headline sm:text-5xl md:text-7xl drop-shadow-2xl">
                         คู่มือสร้างผลงานชิ้นเอก
                     </AnimateOnScroll>
-                    <AnimateOnScroll as="p" delay={300} className="max-w-[700px] mx-auto text-lg md:text-xl" style={{textShadow: '0 1px 3px rgba(0,0,0,0.5)'}}>
+                    <AnimateOnScroll as="p" delay={300} className="max-w-[700px] mx-auto text-lg md:text-2xl text-white/90 font-medium leading-relaxed drop-shadow-lg">
                         เรียนรู้ทุกซอกทุกมุมของเครื่องมือออกแบบ เพื่อปลดปล่อยศักยภาพความคิดสร้างสรรค์ของคุณ
                     </AnimateOnScroll>
                 </div>
@@ -141,21 +144,24 @@ export default function HowToDesignPage() {
             {/* Steps Section */}
             <section className="py-12 md:py-24 lg:py-32">
                 <div className="container px-4 md:px-6">
-                    <AnimateOnScroll delay={100} className="flex flex-col items-center justify-center space-y-4 text-center mb-12">
-                        <h2 className="text-3xl font-headline font-bold tracking-tighter sm:text-4xl md:text-5xl">เริ่มต้นง่ายๆ ใน 5 ขั้นตอน</h2>
-                        <p className="max-w-[900px] text-muted-foreground md:text-xl/relaxed">
+                    <AnimateOnScroll delay={100} className="flex flex-col items-center justify-center space-y-4 text-center mb-16 relative z-10">
+                        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 text-primary text-sm font-semibold uppercase tracking-widest mb-4">
+                            Step by Step
+                        </div>
+                        <h2 className="text-4xl font-headline font-semibold tracking-tight sm:text-5xl md:text-6xl drop-shadow-sm">เริ่มต้นง่ายๆ ใน <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-sky-400">5 ขั้นตอน</span></h2>
+                        <p className="max-w-[900px] text-muted-foreground md:text-xl font-medium">
                            ทำตามไกด์นี้ แล้วคุณจะสร้างเสื้อตัวโปรดได้ในไม่กี่นาที
                         </p>
                     </AnimateOnScroll>
 
                     <div className="mx-auto grid max-w-5xl gap-6 sm:grid-cols-2 lg:grid-cols-3">
                         {steps.map((step, index) => (
-                            <AnimateOnScroll key={step.title} delay={200 + index * 100} className="flex flex-col items-center text-center gap-4 rounded-xl bg-muted/40 p-6 border border-transparent transition-all hover:border-primary/30 hover:bg-card hover:shadow-lg">
-                                <div className="flex h-20 w-20 items-center justify-center rounded-full bg-primary/10 text-primary">
+                            <AnimateOnScroll key={step.title} delay={200 + index * 100} className="flex flex-col items-center text-center gap-4 rounded-[24px] bg-card/40 backdrop-blur-sm p-8 border border-border/50 hover:border-primary/50 transition-all duration-500 hover:bg-card/80 hover:shadow-2xl transform hover:-translate-y-2 group">
+                                <div className="flex h-20 w-20 items-center justify-center rounded-[16px] bg-gradient-to-br from-primary/20 to-primary/5 text-primary shadow-inner group-hover:scale-110 transition-transform">
                                     {step.icon}
                                 </div>
-                                <h3 className="text-xl font-headline font-bold">{step.title}</h3>
-                                <p className="text-sm text-muted-foreground">{step.description}</p>
+                                <h3 className="text-xl font-headline font-semibold tracking-tight">{step.title}</h3>
+                                <p className="text-base text-muted-foreground leading-relaxed">{step.description}</p>
                             </AnimateOnScroll>
                         ))}
                     </div>
@@ -166,7 +172,7 @@ export default function HowToDesignPage() {
             <section className="py-12 md:py-24 lg:py-32 bg-muted">
                 <div className="container px-4 md:px-6">
                     <AnimateOnScroll delay={100} className="flex flex-col items-center justify-center space-y-4 text-center mb-12">
-                        <h2 className="text-3xl font-headline font-bold tracking-tighter sm:text-4xl md:text-5xl">Design Like a Pro</h2>
+                        <h2 className="text-3xl font-headline font-semibold tracking-tighter sm:text-4xl md:text-5xl">เคล็ดลับงานดีไซน์ระดับโปร</h2>
                         <p className="max-w-[900px] text-muted-foreground md:text-xl/relaxed">
                             อัปเกรดงานดีไซน์ของคุณไปอีกขั้นด้วยเคล็ดลับจากมือโปร
                         </p>
@@ -195,7 +201,7 @@ export default function HowToDesignPage() {
             <section className="py-12 md:py-24 lg:py-32">
                 <div className="container px-4 md:px-6">
                     <AnimateOnScroll delay={100} className="flex flex-col items-center justify-center space-y-4 text-center mb-12">
-                        <h2 className="text-3xl font-headline font-bold tracking-tighter sm:text-4xl md:text-5xl">Design Inspiration</h2>
+                        <h2 className="text-3xl font-headline font-semibold tracking-tighter sm:text-4xl md:text-5xl">ไอเดียดีไซน์</h2>
                         <p className="max-w-[900px] text-muted-foreground md:text-xl/relaxed">
                             ยังไม่มีไอเดีย? ลองเริ่มต้นจากแนวทางเหล่านี้
                         </p>
@@ -207,7 +213,7 @@ export default function HowToDesignPage() {
                                <div className="flex h-20 w-20 items-center justify-center rounded-full bg-primary/10 text-primary mb-5 border-2 border-primary/20 transition-all group-hover:scale-110 group-hover:bg-primary group-hover:text-primary-foreground">
                                     {item.icon}
                                </div>
-                               <h3 className="text-xl font-bold font-headline">{item.title}</h3>
+                               <h3 className="text-xl font-semibold font-headline">{item.title}</h3>
                                <p className="text-muted-foreground mt-2 text-sm">{item.description}</p>
                            </AnimateOnScroll>
                        ))}
@@ -218,7 +224,7 @@ export default function HowToDesignPage() {
              {/* CTA Section */}
             <section className="py-20 bg-gradient-to-t from-muted to-background">
                 <AnimateOnScroll delay={200} className="container text-center">
-                    <h2 className="text-3xl font-headline font-bold tracking-tighter">ถึงตาคุณแล้ว!</h2>
+                    <h2 className="text-3xl font-headline font-semibold tracking-tighter">ถึงตาคุณแล้ว!</h2>
                     <p className="text-muted-foreground mt-2 mb-6">เครื่องมือพร้อมแล้ว จินตนาการของคุณล่ะ พร้อมหรือยัง?</p>
                     <Button asChild size="lg">
                         <Link href="/design">

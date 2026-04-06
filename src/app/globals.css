@@ -13,7 +13,7 @@
     --popover: 0 0% 100%;
     --popover-foreground: 220 15% 15%;
     
-    --primary: 221 83% 53%;
+    --primary: 196 88% 63%;
     --primary-foreground: 0 0% 100%;
     
     --secondary: 220 10% 96%;
@@ -30,7 +30,7 @@
     
     --border: 220 10% 90%;
     --input: 220 10% 90%;
-    --ring: 221 83% 53%;
+    --ring: 196 88% 63%;
     
     --radius: 0.75rem;
   }
@@ -45,7 +45,7 @@
     --popover: 220 20% 10%;
     --popover-foreground: 220 15% 95%;
     
-    --primary: 221 83% 63%;
+    --primary: 196 90% 70%;
     --primary-foreground: 220 20% 8%;
     
     --secondary: 220 20% 15%;
@@ -62,7 +62,7 @@
     
     --border: 220 20% 20%;
     --input: 220 20% 20%;
-    --ring: 221 83% 63%;
+    --ring: 196 90% 70%;
   }
 }
 
@@ -72,6 +72,9 @@
   }
   body {
     @apply bg-background text-foreground antialiased;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-bold tracking-tight;
   }
 }
 
@@ -176,5 +179,11 @@
 @layer utilities {
   .text-balance {
     text-wrap: balance;
+  }
+  .glass-panel {
+    @apply bg-card/80 backdrop-blur-xl border border-border/30 shadow-xl;
+  }
+  .glass-panel-dark {
+    @apply bg-card/60 backdrop-blur-xl border border-border/20 shadow-2xl;
   }
 }

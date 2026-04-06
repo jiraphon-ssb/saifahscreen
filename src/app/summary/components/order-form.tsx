@@ -13,6 +13,7 @@ import { useToast } from '@/hooks/use-toast';
 import LineIcon from '@/components/icons/line-icon';
 import type { ProductConfiguration } from '@/app/design/components/design-tool';
 import { getPricePerItem, PRICE_PER_EXTRA_SPOT } from '@/lib/pricing';
+import LZString from 'lz-string';
 
 export interface SizeQuantity {
   S: number;
@@ -63,7 +64,7 @@ export default function OrderForm({ productConfig, quantities, elementsCount, de
   const generateShareUrl = () => {
     if (typeof window === 'undefined') return '';
     const baseUrl = window.location.origin + '/design';
-    const encoded = btoa(JSON.stringify(designState));
+    const encoded = LZString.compressToEncodedURIComponent(JSON.stringify(designState));
     return `${baseUrl}?data=${encoded}`;
   };
 
@@ -265,12 +266,12 @@ ${note ? `📝 หมายเหตุ: ${note}` : ''}
               {Object.entries(quantities).map(([size, qty]) => (
                 <div key={size} className="text-center p-2 bg-muted rounded-md">
                   <div className="text-sm font-medium">{size}</div>
-                  <div className="text-lg font-bold">{qty}</div>
+                  <div className="text-lg font-semibold">{qty}</div>
                 </div>
               ))}
             </div>
             <div className="text-center text-sm text-muted-foreground pt-2">
-              รวมทั้งหมด: <span className="font-bold text-foreground">{totalQuantity} ตัว</span>
+              รวมทั้งหมด: <span className="font-semibold text-foreground">{totalQuantity} ตัว</span>
             </div>
           </div>
         </CardContent>
@@ -297,7 +298,7 @@ ${note ? `📝 หมายเหตุ: ${note}` : ''}
             <span>ราคาต่อตัว</span>
             <span>{unitPrice.toLocaleString()} บาท</span>
           </div>
-          <div className="flex justify-between text-xl font-bold text-primary">
+          <div className="flex justify-between text-xl font-semibold text-primary">
             <span>รวมโดยประมาณ</span>
             <span>~{estimatedTotal.toLocaleString()} บาท</span>
           </div>

@@ -56,16 +56,19 @@ export default function ContactPage() {
   ];
 
   return (
-    <div
-      className="w-full bg-muted"
-    >
-      <div className="container mx-auto px-4 py-16 md:py-24 space-y-24">
+    <div className="bg-gradient-to-b from-background via-secondary/10 to-background min-h-screen relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
+        <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
+      <div className="container mx-auto px-4 py-16 md:py-24 space-y-24 relative z-10">
         
         {/* System 1: Contact Hub */}
         <section>
             <AnimateOnScroll delay={100} className="text-center mb-12">
-                <h1 className="text-4xl font-bold font-headline tracking-tight text-foreground">Get in Touch</h1>
-                <p className="mt-3 text-lg text-muted-foreground max-w-2xl mx-auto">
+                <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 text-primary text-sm font-semibold uppercase tracking-widest mb-4">
+                    ติดต่อเรา
+                </div>
+                <h1 className="text-4xl md:text-6xl font-bold font-headline tracking-tight drop-shadow-sm mb-4"><span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-sky-400">Get in Touch</span></h1>
+                <p className="mt-3 text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto font-medium">
                     เราพร้อมให้ความช่วยเหลือเสมอ ไม่ว่าจะเป็นคำถามทั่วไปหรือการเริ่มต้นโปรเจกต์ใหม่
                 </p>
             </AnimateOnScroll>
@@ -73,12 +76,13 @@ export default function ContactPage() {
             <AnimateOnScroll delay={200}>
                 <Tabs defaultValue="message" className="w-full max-w-4xl mx-auto">
                     <TabsList className="grid w-full grid-cols-2">
-                        <TabsTrigger value="message">Send a Message</TabsTrigger>
-                        <TabsTrigger value="info">Contact Info</TabsTrigger>
+                        <TabsTrigger value="message">ส่งข้อความ</TabsTrigger>
+                        <TabsTrigger value="info">ข้อมูลติดต่อ</TabsTrigger>
                     </TabsList>
                     <TabsContent value="message">
-                        <Card className='border-t-0 rounded-t-none'>
-                            <CardContent className="p-8">
+                        <Card className='border-t-0 rounded-t-none bg-card/60 backdrop-blur-xl border-border/50 shadow-2xl overflow-hidden'>
+                            <CardContent className="p-8 md:p-12 relative">
+                                <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-[80px]" />
                                 <Form {...form}>
                                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
@@ -98,28 +102,29 @@ export default function ContactPage() {
                         </Card>
                     </TabsContent>
                     <TabsContent value="info">
-                        <Card className='border-t-0 rounded-t-none'>
-                            <CardContent className="p-8 space-y-8">
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center md:text-left">
+                        <Card className='border-t-0 rounded-t-none bg-card/60 backdrop-blur-xl border-border/50 shadow-2xl overflow-hidden'>
+                            <CardContent className="p-8 md:p-12 space-y-12 relative">
+                                <div className="absolute top-0 left-0 w-64 h-64 bg-primary/5 rounded-full blur-[80px]" />
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center md:text-left relative z-10">
                                     <div className="flex flex-col items-center md:items-start gap-2">
                                         <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary mb-2"><Phone className="h-6 w-6"/></div>
-                                        <h4 className="font-semibold text-foreground">Phone</h4>
+                                        <h4 className="font-bold text-foreground">โทรศัพท์</h4>
                                         <p className="text-muted-foreground">093-974-2624 (ส้ม)</p>
                                         <p className="text-muted-foreground">093-974-6424 (พิม)</p>
                                     </div>
                                     <div className="flex flex-col items-center md:items-start gap-2">
                                         <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary mb-2"><Mail className="h-6 w-6"/></div>
-                                        <h4 className="font-semibold text-foreground">Email</h4>
+                                        <h4 className="font-bold text-foreground">อีเมล</h4>
                                         <p className="text-muted-foreground">juntakarn.mkt@gmail.com</p>
                                     </div>
                                     <div className="flex flex-col items-center md:items-start gap-2">
                                         <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary mb-2"><Clock className="h-6 w-6"/></div>
-                                        <h4 className="font-semibold text-foreground">Working Hours</h4>
+                                        <h4 className="font-bold text-foreground">เวลาทำการ</h4>
                                         <p className="text-muted-foreground">ทุกวันเวลา 8.30 - 21.30 น.</p>
                                     </div>
                                 </div>
                                 <div className="pt-8 border-t text-center">
-                                    <h4 className="font-semibold text-foreground mb-4">Follow Us on Social Media</h4>
+                                    <h4 className="font-bold text-foreground mb-4">ติดตามเราบน Social Media</h4>
                                     <div className="flex flex-wrap justify-center gap-4">
                                         {socialLinks.map((link) => (
                                             <Button key={link.name} asChild variant="outline" size="icon" className="w-12 h-12 rounded-full transition-all hover:bg-primary/10 hover:text-primary hover:border-primary/50 hover:scale-110">

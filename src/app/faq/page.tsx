@@ -2,6 +2,9 @@
 
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import AnimateOnScroll from '@/components/animate-on-scroll';
+import Link from 'next/link';
+import { Button } from '@/components/ui/button';
+import { ArrowRight, MessageCircle } from 'lucide-react';
 
 export default function FaqPage() {
     const generalFaqs = [
@@ -41,11 +44,11 @@ export default function FaqPage() {
         <Accordion type={type} collapsible className="w-full space-y-4">
             {faqs.map((faq, index) => (
                 <AnimateOnScroll key={index} delay={delayStart + index * 100}>
-                    <AccordionItem value={`item-${index}`} className="bg-card border border-[#E3E8EF] rounded-lg p-2 transition-all hover:border-primary/50">
-                        <AccordionTrigger className="text-left font-semibold text-foreground px-4 py-2 hover:no-underline">
+                    <AccordionItem value={`item-${index}`} className="bg-card/50 backdrop-blur-sm border border-border/60 rounded-[20px] px-2 py-1 transition-all hover:border-primary/50 hover:shadow-lg">
+                        <AccordionTrigger className="text-left font-bold text-foreground px-6 py-4 hover:no-underline hover:text-primary transition-colors text-lg">
                             {faq.q}
                         </AccordionTrigger>
-                        <AccordionContent className="text-muted-foreground px-4">
+                        <AccordionContent className="text-muted-foreground px-6 pb-4 text-base leading-relaxed">
                             {faq.a}
                         </AccordionContent>
                     </AccordionItem>
@@ -55,14 +58,19 @@ export default function FaqPage() {
     );
 
     return (
-        <div className="bg-muted w-full">
-            <div className="container mx-auto px-4 py-16 md:py-24 space-y-24">
+        <div className="bg-gradient-to-b from-background via-secondary/10 to-background w-full min-h-screen relative overflow-hidden">
+            <div className="absolute top-[-20%] left-[-10%] w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
+            <div className="absolute bottom-[-10%] right-[-10%] w-[600px] h-[600px] bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
+            
+            <div className="container mx-auto px-4 py-16 md:py-24 space-y-24 relative z-10">
                 {/* Section 1: General FAQ */}
                 <section className="grid grid-cols-1 lg:grid-cols-3 gap-12 items-start">
                     <AnimateOnScroll delay={100} className="lg:col-span-1 lg:sticky top-24">
-                        <p className="text-primary font-semibold mb-2">General FAQs</p>
-                        <h2 className="text-4xl font-bold text-foreground mb-4 font-headline">คำถามที่พบบ่อย</h2>
-                        <p className="text-muted-foreground">คำถามทั่วไปที่ลูกค้ามักสอบถามเข้ามาเกี่ยวกับบริการของเรา</p>
+                        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 text-primary text-sm font-semibold uppercase tracking-widest mb-4">
+                            FAQ
+                        </div>
+                        <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-6 font-headline tracking-tight">คำถามที่พบบ่อย</h2>
+                        <p className="text-muted-foreground text-lg">คำถามทั่วไปที่ลูกค้ามักสอบถามเข้ามาเกี่ยวกับบริการของเรา</p>
                     </AnimateOnScroll>
                     <div className="lg:col-span-2">
                         {renderFaqAccordion(generalFaqs, "single", 200)}
@@ -83,6 +91,28 @@ export default function FaqPage() {
                             {renderFaqAccordion(fullFaqsRight, "single", 200)}
                         </div>
                     </div>
+                </section>
+
+                {/* CTA Section */}
+                <section className="text-center py-12">
+                    <AnimateOnScroll delay={100}>
+                        <h2 className="text-3xl font-bold font-headline mb-4">ยังมีคำถามเพิ่มเติม?</h2>
+                        <p className="text-muted-foreground text-lg mb-8">ทีมงานพร้อมให้คำปรึกษาและช่วยเหลือคุณเสมอ</p>
+                        <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                            <Link href="/contact">
+                                <Button size="lg" className="rounded-full px-8 h-14 text-base font-semibold shadow-lg hover:shadow-xl transition-all hover:scale-105 group">
+                                    <MessageCircle className="mr-2 h-5 w-5" />
+                                    ติดต่อเรา
+                                </Button>
+                            </Link>
+                            <Link href="/design">
+                                <Button size="lg" variant="outline" className="rounded-full px-8 h-14 text-base font-semibold shadow-lg hover:shadow-xl transition-all hover:scale-105 group">
+                                    เริ่มออกแบบเลย
+                                    <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-2 transition-transform" />
+                                </Button>
+                            </Link>
+                        </div>
+                    </AnimateOnScroll>
                 </section>
             </div>
         </div>

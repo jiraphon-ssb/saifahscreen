@@ -98,7 +98,7 @@ export default function PriceCalculator() {
   return (
     <div className="p-8 rounded-lg border bg-card shadow-sm">
         <CardHeader className="p-0 mb-6">
-            <CardTitle className="font-headline text-3xl">โปรแกรมคำนวณราคา</CardTitle>
+            <CardTitle className="font-headline text-3xl font-bold">โปรแกรมคำนวณราคา</CardTitle>
             <CardDescription className="mt-2">
               ราคานี้รวม: ออกแบบฟรี, สกรีนฟรี 1 จุด (ขนาดใดก็ได้), และจัดส่งทั่วประเทศ
             </CardDescription>
@@ -133,7 +133,7 @@ export default function PriceCalculator() {
             <Separator />
 
             <div className="space-y-4">
-                <Label className="text-base font-medium">ตำแหน่งสกรีนเพิ่มเติม (ฟรี 1 จุดแรก)</Label>
+                <Label className="text-base font-bold">ตำแหน่งสกรีนเพิ่มเติม (ฟรี 1 จุดแรก)</Label>
                 <div className="space-y-3">
                     {selectedSpots.map(renderSpotItem)}
 

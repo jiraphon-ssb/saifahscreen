@@ -182,11 +182,11 @@ export default function GenerateSummaryDialog({
                         <span className='text-muted-foreground flex items-center gap-2'><Printer className='w-4 h-4'/>ค่าสกรีนเพิ่ม ({extraSpots} จุด)</span>
                         <span>+ {extraSpotPrice.toLocaleString()} บาท</span>
                     </div>
-                     <div className="flex justify-between items-center font-bold">
+                     <div className="flex justify-between items-center font-semibold">
                         <span className='text-muted-foreground'>ราคารวม/ตัว</span>
                         <span>{unitPrice.toLocaleString()} บาท</span>
                     </div>
-                     <div className="flex justify-between items-center text-xl font-bold text-primary pt-2 border-t mt-2">
+                     <div className="flex justify-between items-center text-xl font-semibold text-primary pt-2 border-t mt-2">
                         <span>ราคารวมทั้งหมด</span>
                         <span>{total.toLocaleString()} บาท</span>
                     </div>
@@ -200,7 +200,7 @@ export default function GenerateSummaryDialog({
                   <div className="space-y-4">
                   {availableSizes.map((size) => (
                       <div key={size} className="grid grid-cols-[40px_1fr] items-center gap-4">
-                          <Label htmlFor={`quantity-${size}`} className='text-right font-bold'>{size}</Label>
+                          <Label htmlFor={`quantity-${size}`} className='text-right font-medium'>{size}</Label>
                           <div className="flex items-center">
                               <Button
                               variant="outline" size="icon"

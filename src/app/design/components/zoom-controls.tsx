@@ -24,14 +24,14 @@ export default function ZoomControls({ scale, setScale }: ZoomControlsProps) {
     }
 
     return (
-        <div className="absolute bottom-4 right-4 z-30 flex items-center gap-1 rounded-lg border border-border/50 bg-card/80 p-1 shadow-lg backdrop-blur-sm">
-            <Button variant="ghost" size="icon" className="h-9 w-9" onClick={() => zoom('out')} aria-label="ย่อ">
+        <div className="flex items-center gap-1 rounded-xl border border-zinc-200 bg-white/90 backdrop-blur-sm p-1 shadow-md">
+            <Button variant="ghost" size="icon" className="h-9 w-9 rounded-lg" onClick={() => zoom('out')} aria-label="ย่อ">
                 <ZoomOut className="h-4 w-4" />
             </Button>
-            <Button variant="ghost" className="h-9 w-20 text-xs tabular-nums" onClick={resetZoom}>
+            <Button variant="ghost" className="h-9 w-16 text-xs tabular-nums font-bold rounded-lg" onClick={resetZoom}>
                 {scalePercentage}%
             </Button>
-            <Button variant="ghost" size="icon" className="h-9 w-9" onClick={() => zoom('in')} aria-label="ขยาย">
+            <Button variant="ghost" size="icon" className="h-9 w-9 rounded-lg" onClick={() => zoom('in')} aria-label="ขยาย">
                 <ZoomIn className="h-4 w-4" />
             </Button>
         </div>

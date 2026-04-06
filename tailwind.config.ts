@@ -17,8 +17,9 @@ export default {
     },
     extend: {
       fontFamily: {
-        body: ['Inter', 'Prompt', 'sans-serif'],
-        headline: ['Space Grotesk', 'Prompt', 'sans-serif'],
+        sans: ['Prompt', 'sans-serif'],
+        body: ['Prompt', 'sans-serif'],
+        headline: ['Prompt', 'sans-serif'],
         code: ['monospace'],
       },
       colors: {

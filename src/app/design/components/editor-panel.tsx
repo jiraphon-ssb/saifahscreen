@@ -1,12 +1,13 @@
 'use client';
 
 import { ScrollArea } from '@/components/ui/scroll-area';
-import type { DesignElement, ProductConfiguration, ActiveTool } from './design-tool';
+import { SlidersHorizontal, ShoppingBag } from 'lucide-react';
+import type { DesignElement, ProductConfiguration, ActiveTool, OrderItem } from './design-tool';
 import ProductPanel from './product-panel';
 import AddElementsPanel from './add-elements-panel';
 import LayersPanel from './layers-panel';
 import InspectorPanel from './inspector-panel';
-import { SlidersHorizontal } from 'lucide-react';
+import OrderPanel from './order-panel';
 
 interface EditorPanelProps {
   activeTool: ActiveTool;
@@ -24,6 +25,12 @@ interface EditorPanelProps {
   duplicateElement: (id: string) => void;
   setSelectedElementId: (id: string | null) => void;
   onToggleVisibility: (id: string) => void;
+  // New Order Props
+  orders: OrderItem[];
+  addOrder: (colorName: string, colorValue: string, imageUrl: string) => void;
+  removeOrder: (id: string) => void;
+  updateOrderSize: (orderId: string, size: string, quantity: number) => void;
+  currentTshirt: { name: string, colorValue: string, imageUrl: string };
 }
 
 export default function EditorPanel({
@@ -42,11 +49,16 @@ export default function EditorPanel({
   duplicateElement,
   setSelectedElementId,
   onToggleVisibility,
+  orders,
+  addOrder,
+  removeOrder,
+  updateOrderSize,
+  currentTshirt,
 }: EditorPanelProps) {
   
   switch (activeTool) {
     case 'Product':
-      return <ProductPanel config={config} setConfig={setConfig} />;
+      return <ProductPanel config={config} setConfig={setConfig} orders={orders} addOrder={addOrder} removeOrder={removeOrder} updateOrderSize={updateOrderSize} />;
     case 'Elements':
       return <AddElementsPanel onAddText={onAddText} onAddImage={onAddImage} />;
     case 'Layers':
@@ -59,6 +71,7 @@ export default function EditorPanel({
           onSendToBack={sendToBack}
           onToggleVisibility={onToggleVisibility}
           onDuplicateElement={duplicateElement}
+          onDeleteElement={deleteElement}
         />
       );
     case 'Inspector':
@@ -79,8 +92,8 @@ export default function EditorPanel({
               <h3 className="font-semibold text-foreground">เครื่องมือแก้ไข</h3>
               <p className="text-sm">เลือกองค์ประกอบบน Canvas เพื่อเริ่มแก้ไขคุณสมบัติ</p>
           </div>
-      )
+      );
     default:
-      return <ProductPanel config={config} setConfig={setConfig} />;
+      return <ProductPanel config={config} setConfig={setConfig} orders={orders} addOrder={addOrder} removeOrder={removeOrder} updateOrderSize={updateOrderSize} />;
   }
 }
