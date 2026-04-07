@@ -152,8 +152,8 @@ export default function InspectorPanel({
               }
               className="font-bold text-base text-zinc-950 bg-transparent border-0 focus-visible:ring-0 p-0 h-auto tracking-tight"
             />
-            <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">
-              {isText ? "ข้อความ" : "รูปภาพ"}
+            <span className="text-[10px] font-bold text-primary uppercase tracking-widest">
+              {isText ? "แก้ไขข้อความ" : "แก้ไขรูปภาพ"}
             </span>
           </div>
         </div>
@@ -184,8 +184,8 @@ export default function InspectorPanel({
           {/* Group 1: ตำแหน่ง & ขนาด */}
           <AccordionItem value="transform" className="border-b-0">
             <AccordionTrigger className="px-5 py-4 hover:no-underline group">
-              <span className="flex items-center gap-3 text-sm font-bold text-zinc-950 uppercase tracking-tight">
-                <div className="h-7 w-7 rounded-lg bg-zinc-100 flex items-center justify-center group-data-[state=open]:bg-primary group-data-[state=open]:text-primary-foreground transition-all">
+              <span className="flex items-center gap-3 text-sm font-bold text-primary uppercase tracking-tight">
+                <div className="h-7 w-7 rounded-lg bg-primary/10 text-primary flex items-center justify-center group-data-[state=open]:bg-primary group-data-[state=open]:text-primary-foreground transition-all">
                   <Move className="h-3.5 w-3.5" />
                 </div>
                 ตำแหน่ง & ขนาด
@@ -264,9 +264,9 @@ export default function InspectorPanel({
           {/* Group 2: สไตล์ */}
           <AccordionItem value="style" className="border-b-0">
             <AccordionTrigger className="px-5 py-4 hover:no-underline group">
-              <span className="flex items-center gap-3 text-sm font-bold text-zinc-950 uppercase tracking-tight">
-                <div className="h-7 w-7 rounded-lg bg-zinc-100 flex items-center justify-center group-data-[state=open]:bg-zinc-950 group-data-[state=open]:text-white transition-all">
-                  <Sliders className="h-3.5 w-3.5" />
+              <span className="flex items-center gap-3 text-sm font-bold text-primary uppercase tracking-tight">
+                <div className="h-7 w-7 rounded-lg bg-zinc-100 flex items-center justify-center group-data-[state=open]:bg-primary group-data-[state=open]:text-white transition-all">
+                  <Move className="h-3.5 w-3.5" />
                 </div>
                 สไตล์ & เอฟเฟกต์
               </span>

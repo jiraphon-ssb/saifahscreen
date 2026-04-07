@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Prompt } from "next/font/google";
 import { cn } from "@/lib/utils";
 import { Toaster } from "@/components/ui/toaster";
@@ -22,7 +22,7 @@ export const metadata: Metadata = {
     "สกรีนเสื้อคุณภาพ",
   ],
   authors: [{ name: "SAIFAH Studio" }],
-  viewport: "width=device-width, initial-scale=1",
+  metadataBase: new URL("https://saifahscreen.com"),
   openGraph: {
     type: "website",
     locale: "th_TH",
@@ -58,6 +58,11 @@ export const metadata: Metadata = {
       "max-snippet": -1,
     },
   },
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
 };
 
 const jsonLd = {

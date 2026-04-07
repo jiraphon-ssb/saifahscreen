@@ -30,7 +30,7 @@ import CanvasArea from "./canvas-area";
 import MainToolbar from "./main-toolbar";
 import EditorPanel from "./editor-panel";
 import LZString from "lz-string";
-import { setIDB } from "@/lib/idb";
+import { setIDB, getIDB } from "@/lib/idb";
 
 export type DesignElement = {
   id: string;
@@ -146,45 +146,76 @@ export default function DesignTool({ designId }: DesignToolProps) {
 
   useEffect(() => {
     const dataParam = searchParams.get("data");
-    if (dataParam) {
-      try {
-        const decompressed =
-          LZString.decompressFromEncodedURIComponent(dataParam);
-        if (decompressed) {
-          const fetchedDesign = JSON.parse(decompressed);
-          if (fetchedDesign) {
-            const elements =
-              typeof fetchedDesign.designConfiguration === "string"
+    
+    const loadData = async () => {
+      // 1. Try loading from URL (Priority)
+      if (dataParam) {
+        try {
+          const decompressed = LZString.decompressFromEncodedURIComponent(dataParam);
+          if (decompressed) {
+            const fetchedDesign = JSON.parse(decompressed);
+            if (fetchedDesign) {
+              const elements = typeof fetchedDesign.designConfiguration === "string"
                 ? JSON.parse(fetchedDesign.designConfiguration)
                 : fetchedDesign.designConfiguration;
+              
+              let productConfig = fetchedDesign.productConfiguration;
+              if (productConfig?.tshirt?.imageUrl?.endsWith(".webp")) {
+                productConfig.tshirt.imageUrl = productConfig.tshirt.imageUrl.replace(".webp", ".png");
+              }
 
-            // Migrate old .webp mockup URLs to .png
-            let productConfig = fetchedDesign.productConfiguration;
-            if (productConfig?.tshirt?.imageUrl?.endsWith(".webp")) {
-              productConfig.tshirt.imageUrl =
-                productConfig.tshirt.imageUrl.replace(".webp", ".png");
-            }
-
-            if (Array.isArray(elements) && productConfig) {
-              const newDesignState: DesignState = {
-                productConfig,
-                elements,
-                orders: fetchedDesign.orders || [],
-              };
-              setDesignState(newDesignState, true);
+              if (Array.isArray(elements) && productConfig) {
+                setDesignState({
+                  productConfig,
+                  elements,
+                  orders: fetchedDesign.orders || [],
+                }, true);
+                return; // URL data wins
+              }
             }
           }
+        } catch (e) {
+          console.error("URL Load Error:", e);
+        }
+      }
+
+      // 2. Try loading from IndexedDB (Resume last work)
+      try {
+        const savedData = await getIDB("saifah_auto_save");
+        if (savedData) {
+          const parsed = JSON.parse(savedData);
+          setDesignState({
+            productConfig: parsed.productConfiguration,
+            elements: parsed.designConfiguration,
+            orders: parsed.orders || [],
+          }, true);
         }
       } catch (e) {
-        console.error("Failed to load design from URL:", e);
-        toast({
-          variant: "destructive",
-          title: "ไม่สามารถโหลดดีไซน์ได้",
-          description: "ลิงก์ข้อมูลไม่ถูกต้องหรือเสียหาย",
-        });
+        console.error("IDB Load Error:", e);
       }
-    }
-  }, [searchParams, setDesignState, toast]);
+    };
+
+    loadData();
+  }, [searchParams, setDesignState]);
+
+  // Auto-save effect
+  useEffect(() => {
+    const saveWork = async () => {
+      try {
+        const rawData = JSON.stringify({
+          productConfiguration: designState.productConfig,
+          designConfiguration: designState.elements,
+          orders: designState.orders,
+        });
+        await setIDB("saifah_auto_save", rawData);
+      } catch (e) {
+        // Silently fail or log sparingly
+      }
+    };
+    
+    const timeout = setTimeout(saveWork, 1500);
+    return () => clearTimeout(timeout);
+  }, [designState]);
 
   const handleToolSelectForMobile = (tool: ActiveTool) => {
     setActiveTool(tool);
@@ -210,7 +241,7 @@ export default function DesignTool({ designId }: DesignToolProps) {
     setSelectedElementId(id);
     if (id) {
       setActiveTool("Inspector");
-      if (window.innerWidth < 768) {
+      if (window.innerWidth < 1024) {
         setMobilePanelOpen(true);
       }
     } else {
@@ -285,7 +316,7 @@ export default function DesignTool({ designId }: DesignToolProps) {
 
     const newElement: DesignElement = {
       ...elementToDuplicate,
-      id: `${elementToDuplicate.type}-${Date.now()}`,
+      id: `${elementToDuplicate.type}-${crypto.randomUUID()}`,
       name: `${elementToDuplicate.name} (สำเนา)`,
       x: elementToDuplicate.x + 20,
       y: elementToDuplicate.y + 20,
@@ -318,7 +349,7 @@ export default function DesignTool({ designId }: DesignToolProps) {
     imageUrl: string,
   ) => {
     setDesignState((prev) => {
-      const id = `order-${Date.now()}`;
+      const id = `order-${crypto.randomUUID()}`;
       const newOrder: OrderItem = {
         id,
         tshirt: { name: colorName, colorValue, imageUrl },
@@ -363,7 +394,7 @@ export default function DesignTool({ designId }: DesignToolProps) {
     props: Partial<DesignElement>,
   ): DesignElement => {
     const base = {
-      id: `${type}-${Date.now()}`,
+      id: `${type}-${crypto.randomUUID()}`,
       type: type,
       x: 150,
       y: 150,
@@ -479,9 +510,9 @@ export default function DesignTool({ designId }: DesignToolProps) {
           initial={{ y: -50, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.4 }}
-          className="flex h-14 shrink-0 items-center justify-between border-b bg-card px-2 md:px-6 z-30 shadow-sm"
+          className="flex h-14 shrink-0 items-center justify-between border-b bg-card px-2 lg:px-6 z-30 shadow-sm"
         >
-          <div className="flex items-center gap-2 md:gap-4">
+          <div className="flex items-center gap-2 lg:gap-4">
             <Button
               variant="ghost"
               size="icon"
@@ -493,9 +524,9 @@ export default function DesignTool({ designId }: DesignToolProps) {
                 <span className="sr-only">ปิด</span>
               </Link>
             </Button>
-            <div className="h-6 w-px bg-zinc-200 hidden md:block" />
-            <h1 className="font-black text-sm md:text-base hidden md:block tracking-tight text-zinc-950 uppercase">
-              SAIFAH DESIGN STUDIO
+            <div className="h-6 w-px bg-zinc-200 hidden lg:block" />
+            <h1 className="font-semibold text-sm lg:text-base hidden lg:block tracking-tight text-zinc-950 uppercase">
+              SAIFAH SCREEN
             </h1>
             <span className="text-[10px] font-bold px-2 py-0.5 bg-zinc-950 rounded-full text-white hidden sm:inline ml-2">
               {designState.elements.length} LAYERS
@@ -503,7 +534,7 @@ export default function DesignTool({ designId }: DesignToolProps) {
           </div>
 
           <div className="flex items-center gap-1 md:gap-3">
-            <div className="hidden md:flex items-center gap-1 mr-2 bg-zinc-100 rounded-lg p-1">
+            <div className="hidden lg:flex items-center gap-1 mr-2 bg-zinc-100 rounded-lg p-1">
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button
@@ -536,7 +567,7 @@ export default function DesignTool({ designId }: DesignToolProps) {
 
             <Separator
               orientation="vertical"
-              className="h-6 hidden md:block mr-2"
+              className="h-6 hidden lg:block mr-2"
             />
 
             <Button
@@ -545,12 +576,12 @@ export default function DesignTool({ designId }: DesignToolProps) {
               onClick={handleShare}
             >
               <Share2 className="h-4 w-4" />
-              <span className="hidden md:inline">แชร์แบบนี้</span>
+              <span className="hidden lg:inline">แชร์แบบนี้</span>
             </Button>
           </div>
         </motion.header>
 
-        <div className="hidden md:flex flex-row flex-1 h-full min-h-0 bg-secondary/10">
+        <div className="hidden lg:flex flex-row flex-1 h-full min-h-0 bg-secondary/10">
           <motion.div
             initial={{ x: -50, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
@@ -563,17 +594,17 @@ export default function DesignTool({ designId }: DesignToolProps) {
             />
           </motion.div>
 
-          <motion.aside
-            initial={{ x: -100, opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            transition={{
-              duration: 0.5,
-              delay: 0.1,
-              type: "spring",
-              damping: 20,
-            }}
-            className="flex h-full w-[360px] shrink-0 flex-col border-r border-white/10 glass-panel z-30 overflow-hidden"
-          >
+        <motion.aside
+          initial={{ x: -100, opacity: 0 }}
+          animate={{ x: 0, opacity: 1 }}
+          transition={{
+            duration: 0.5,
+            delay: 0.1,
+            type: "spring",
+            damping: 20,
+          }}
+          className="flex h-full w-[320px] lg:w-[380px] shrink-0 flex-col border-r border-white/10 glass-panel z-30 overflow-hidden"
+        >
             <ScrollArea className="flex-1">
               <EditorPanel
                 activeTool={activeTool}
@@ -617,7 +648,7 @@ export default function DesignTool({ designId }: DesignToolProps) {
           </motion.div>
         </div>
 
-        <div className="flex md:hidden flex-col flex-1 min-h-0">
+        <div className="flex lg:hidden flex-col flex-1 min-h-0">
           <CanvasArea
             elements={designState.elements}
             imageUrl={designState.productConfig.tshirt.imageUrl}

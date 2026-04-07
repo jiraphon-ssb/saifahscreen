@@ -62,12 +62,13 @@ export default function CanvasPreview({
     >
       {!hideMockup && (
         <div className="absolute inset-0 z-0">
-          <img
-            key={imageUrl}
+          <Image
             src={imageUrl}
             alt="T-shirt mockup"
-            className="w-full h-full object-contain pointer-events-none"
-            loading="eager"
+            fill
+            className="object-contain pointer-events-none"
+            priority
+            sizes="(max-width: 768px) 100vw, 600px"
           />
         </div>
       )}
@@ -109,10 +110,6 @@ export default function CanvasPreview({
                 contrast(${element.filters?.contrast ?? 100}%)
                 grayscale(${element.filters?.grayscale ?? 0}%)
                 sepia(${element.filters?.sepia ?? 0}%)
-              `,
-              transform: `
-                  scaleX(${element.flip?.horizontal ? -1 : 1})
-                  scaleY(${element.flip?.vertical ? -1 : 1})
               `,
               opacity: element.opacity ?? 1,
             };
@@ -190,7 +187,7 @@ export default function CanvasPreview({
                 style={{
                   zIndex: index + 1,
                   visibility: element.visible === false ? "hidden" : "visible",
-                  transform: `rotate(${element.rotation || 0}deg)`,
+                  transform: `rotate(${element.rotation || 0}deg) scaleX(${element.flip?.horizontal ? -1 : 1}) scaleY(${element.flip?.vertical ? -1 : 1})`,
                 }}
                 bounds="parent"
                 enableResizing={isSelected}
@@ -198,12 +195,19 @@ export default function CanvasPreview({
               >
                 <div className="w-full h-full relative">
                   {element.type === "image" && element.url && (
-                    <img
-                      src={element.url}
-                      alt={element.name}
-                      className="w-full h-full object-contain pointer-events-none select-none"
-                      style={imageStyle}
-                    />
+                    <div className="w-full h-full relative" style={imageStyle}>
+                      <Image
+                        src={element.url}
+                        alt={element.name}
+                        fill
+                        className="object-contain pointer-events-none select-none"
+                        unoptimized={
+                          element.url.startsWith("http") ||
+                          element.url.startsWith("blob")
+                        }
+                        sizes={`${scaledWidth}px`}
+                      />
+                    </div>
                   )}
                   {element.type === "text" && (
                     <div className="w-full h-full pointer-events-none select-none">

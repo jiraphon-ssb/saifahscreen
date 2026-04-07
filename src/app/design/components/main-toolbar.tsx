@@ -51,7 +51,7 @@ export default function MainToolbar({
   return (
     <>
       {/* Desktop Sidebar */}
-      <aside className="hidden md:flex h-full w-[72px] shrink-0 flex-col items-center gap-2 border-r border-zinc-200 bg-white py-5 z-40">
+      <aside className="hidden lg:flex h-full w-[72px] shrink-0 flex-col items-center gap-2 border-r border-zinc-200 bg-white py-5 z-40">
         <TooltipProvider delayDuration={300}>
           {tools.map((tool) => {
             const isActive = activeTool === tool.id;
@@ -103,7 +103,7 @@ export default function MainToolbar({
       </aside>
 
       {/* Mobile Bottom Tab Bar */}
-      <aside className="md:hidden flex h-[60px] w-full shrink-0 items-center border-t border-zinc-200 bg-white px-1 gap-0.5 justify-around shadow-[0_-4px_20px_rgba(0,0,0,0.06)]">
+      <aside className="lg:hidden flex h-[60px] w-full shrink-0 items-center border-t border-zinc-200 bg-white px-1 gap-0.5 justify-around shadow-[0_-4px_20px_rgba(0,0,0,0.06)]">
         {tools.map((tool) => {
           const isActive = activeTool === tool.id;
           const isDisabled = tool.needsSelection && !selectedElementId;

@@ -152,7 +152,7 @@ function SummaryContent() {
     try {
       const captured = await html2canvas(canvas, {
         useCORS: true,
-        scale: 3,
+        scale: 4,
         backgroundColor: "#ffffff",
       } as any);
       const link = document.createElement("a");
@@ -177,7 +177,7 @@ function SummaryContent() {
 
       const canvas = await html2canvas(el, {
         useCORS: true,
-        scale: 2,
+        scale: 4,
         backgroundColor: "#ffffff",
         onclone: (doc: Document) => {
           const svgs = doc.getElementsByTagName("svg");

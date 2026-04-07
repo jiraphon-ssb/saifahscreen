@@ -180,7 +180,7 @@ export default function ProductPanel({
           {/* Section 2: Color Selection */}
           <div className="space-y-5">
             <div className="flex items-center justify-between">
-              <h2 className="text-xl font-bold text-zinc-950">
+              <h2 className="text-xl font-bold text-primary">
                 2. เลือกสีเสื้อ
               </h2>
               <Badge

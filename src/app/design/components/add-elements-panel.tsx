@@ -10,6 +10,10 @@ import {
   Plus,
   History,
   MousePointer2,
+  ChevronRight,
+  Image as ImageIcon,
+  Layers2,
+  MessageSquare,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -73,27 +77,27 @@ export default function AddElementsPanel({
 
   return (
     <div className="flex flex-col h-full bg-white font-prompt">
-      <div className="p-6 border-b border-zinc-100 bg-zinc-50/50">
-        <h3 className="text-sm font-black text-zinc-950 uppercase tracking-widest flex items-center gap-3">
-          <div className="h-8 w-8 rounded-lg bg-zinc-950 flex items-center justify-center text-white">
-            <Plus className="h-4 w-4" />
-          </div>
+      <div className="p-5 space-y-1">
+        <h2 className="text-xl font-bold text-primary">
           เพิ่มองค์ประกอบ
-        </h3>
+        </h2>
+        <p className="text-xs text-zinc-400 font-medium tracking-normal">
+          ใส่ข้อความและรูปภาพเพื่อตกแต่งเสื้อของคุณ
+        </p>
       </div>
 
       <Tabs defaultValue="text" className="w-full">
         <TabsList className="w-full grid grid-cols-2 h-12 bg-zinc-100 rounded-none p-1">
           <TabsTrigger
             value="text"
-            className="data-[state=active]:bg-white data-[state=active]:text-zinc-950 font-bold text-xs rounded-none transition-all gap-2"
+            className="data-[state=active]:bg-primary data-[state=active]:text-white font-bold text-xs rounded-none transition-all gap-2"
           >
             <Type className="h-4 w-4" />
             ข้อความ
           </TabsTrigger>
           <TabsTrigger
             value="image"
-            className="data-[state=active]:bg-white data-[state=active]:text-zinc-950 font-bold text-xs rounded-none transition-all gap-2"
+            className="data-[state=active]:bg-primary data-[state=active]:text-white font-bold text-xs rounded-none transition-all gap-2"
           >
             <ImageUp className="h-4 w-4" />
             รูปภาพ
@@ -108,23 +112,23 @@ export default function AddElementsPanel({
               </h4>
               <Button
                 variant="outline"
-                className="w-full h-16 justify-between gap-3 border-2 border-zinc-100 bg-white hover:border-zinc-950 hover:bg-zinc-50 rounded-2xl transition-all group"
+                className="w-full h-16 justify-between gap-3 border-none bg-primary hover:bg-primary/90 text-primary-foreground rounded-2xl transition-all shadow-xl shadow-primary/10 active:scale-[0.98] group px-6"
                 onClick={() => onAddText("ข้อความของคุณ")}
               >
                 <div className="flex items-center gap-4">
-                  <div className="h-10 w-10 rounded-xl bg-zinc-950 flex items-center justify-center shadow-lg shadow-zinc-950/10">
+                  <div className="h-10 w-10 rounded-xl bg-white/10 flex items-center justify-center border border-white/10">
                     <Type className="h-5 w-5 text-white" />
                   </div>
                   <div className="text-left">
-                    <p className="text-sm font-bold text-zinc-950 uppercase leading-none">
+                    <p className="text-sm font-bold text-white uppercase leading-none">
                       เพิ่มข้อความใหม่
                     </p>
-                    <p className="text-[11px] text-zinc-400 font-medium mt-1">
+                    <p className="text-[11px] text-white/50 font-medium mt-1">
                       Add basic text string
                     </p>
                   </div>
                 </div>
-                <Plus className="h-5 w-5 text-zinc-200 group-hover:text-zinc-950 transition-colors" />
+                <ChevronRight className="h-4 w-4 text-white/50 group-hover:text-white transition-colors" />
               </Button>
             </div>
 
@@ -189,19 +193,19 @@ export default function AddElementsPanel({
               <h4 className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">
                 อัปโหลดรูปภาพ
               </h4>
-              <div className="border-2 border-dashed border-zinc-200 rounded-3xl p-10 text-center hover:border-zinc-950 hover:bg-zinc-50 transition-all cursor-pointer group">
+              <div className="border-none bg-primary/5 rounded-[32px] p-10 text-center hover:bg-primary/10 transition-all cursor-pointer group relative overflow-hidden border border-primary/10 shadow-inner">
                 <Label
                   htmlFor="image-upload"
                   className="cursor-pointer flex flex-col items-center gap-4"
                 >
-                  <div className="h-16 w-16 rounded-3xl bg-zinc-100 flex items-center justify-center group-hover:bg-zinc-950 transition-all shadow-inner">
-                    <Upload className="h-8 w-8 text-zinc-400 group-hover:text-white" />
+                  <div className="h-16 w-16 rounded-3xl bg-primary flex items-center justify-center group-hover:scale-110 transition-all shadow-xl shadow-primary/20">
+                    <Upload className="h-8 w-8 text-white" />
                   </div>
                   <div>
-                    <p className="font-black text-zinc-950 uppercase tracking-tight">
+                    <p className="font-bold text-primary text-base uppercase tracking-tight">
                       อัปโหลดไฟล์รูปภาพ
                     </p>
-                    <p className="text-[11px] text-zinc-400 font-bold uppercase mt-1">
+                    <p className="text-[11px] text-primary/40 font-bold uppercase mt-1">
                       PNG, JPG, SVG (Max 10MB)
                     </p>
                   </div>
@@ -218,27 +222,38 @@ export default function AddElementsPanel({
 
             <Separator className="bg-zinc-100" />
 
-            <div className="p-6 rounded-3xl bg-zinc-950 text-white shadow-xl shadow-zinc-950/10 space-y-4">
-              <div className="flex items-center gap-3">
-                <Sparkles className="h-5 w-5 text-white animate-pulse" />
-                <h4 className="text-xs font-black uppercase tracking-tight">
-                  คำแนะนำก่อนอัปโหลด
-                </h4>
+            <div className="p-6 rounded-[32px] bg-primary text-white shadow-2xl shadow-primary/30 relative overflow-hidden group">
+              {/* Decorative Mesh Background */}
+              <div className="absolute top-0 right-0 w-48 h-48 bg-white/20 rounded-full blur-3xl -mr-20 -mt-20 group-hover:scale-110 transition-transform duration-700" />
+              <div className="absolute bottom-0 left-0 w-32 h-32 bg-sky-300/30 rounded-full blur-2xl -ml-16 -mb-16" />
+              
+              <div className="relative z-10 space-y-5">
+                <div className="flex items-center gap-3">
+                  <div className="h-8 w-8 rounded-xl bg-white/20 flex items-center justify-center">
+                    <Sparkles className="h-5 w-5 text-white animate-pulse" />
+                  </div>
+                  <h4 className="text-sm font-bold uppercase tracking-tight">
+                    คำแนะนำก่อนอัปโหลด
+                  </h4>
+                </div>
+
+                <div className="grid grid-cols-1 gap-4">
+                  {[
+                    { icon: <ImageIcon className="h-4 w-4" />, text: "ใช้รูปความละเอียดสูงเพื่อความคม" },
+                    { icon: <Layers2 className="h-4 w-4" />, text: "ไฟล์ PNG พื้นหลังโปร่งใสดีที่สุด" },
+                    { icon: <MessageSquare className="h-4 w-4" />, text: "หลีกเลี่ยงข้อความที่เล็กเกินไป" }
+                  ].map((item, idx) => (
+                    <div key={idx} className="flex items-center gap-3 p-3 rounded-2xl bg-white/10 border border-white/5 backdrop-blur-sm hover:bg-white/20 transition-all cursor-default">
+                      <div className="h-8 w-8 rounded-lg bg-white/20 flex items-center justify-center shrink-0">
+                        {item.icon}
+                      </div>
+                      <span className="text-[11px] font-bold uppercase tracking-wide leading-tight">
+                        {item.text}
+                      </span>
+                    </div>
+                  ))}
+                </div>
               </div>
-              <ul className="text-[11px] font-bold text-white/60 space-y-2 uppercase leading-relaxed">
-                <li className="flex items-start gap-2">
-                  <div className="h-1.5 w-1.5 rounded-full bg-white mt-1 shrink-0" />{" "}
-                  ใช้รูปความละเอียดสูงเพื่อความคม
-                </li>
-                <li className="flex items-start gap-2">
-                  <div className="h-1.5 w-1.5 rounded-full bg-white mt-1 shrink-0" />{" "}
-                  ไฟล์ PNG พื้นหลังโปร่งใสดีที่สุด
-                </li>
-                <li className="flex items-start gap-2">
-                  <div className="h-1.5 w-1.5 rounded-full bg-white mt-1 shrink-0" />{" "}
-                  หลีกเลี่ยงข้อความที่เล็กเกินไป
-                </li>
-              </ul>
             </div>
           </TabsContent>
         </div>

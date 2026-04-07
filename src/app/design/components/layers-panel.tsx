@@ -47,13 +47,13 @@ export default function LayersPanel({
   return (
     <TooltipProvider>
       <div className="flex flex-col h-full bg-white font-prompt">
-        <div className="p-5 border-b border-zinc-100 bg-zinc-50/50">
-          <h3 className="text-sm font-black text-zinc-950 uppercase tracking-widest flex items-center gap-3">
-            <div className="h-8 w-8 rounded-lg bg-zinc-950 flex items-center justify-center text-white">
-              <Layers className="h-4 w-4" />
-            </div>
+        <div className="p-5 space-y-1">
+          <h2 className="text-xl font-bold text-primary">
             เลเยอร์ ({elements.length})
-          </h3>
+          </h2>
+          <p className="text-xs text-zinc-400 font-medium tracking-normal">
+            ลำดับและการทับซ้อนของสิ่งต่างๆ บนเสื้อ
+          </p>
         </div>
 
         {elements.length === 0 ? (
@@ -80,7 +80,7 @@ export default function LayersPanel({
                   className={cn(
                     "group cursor-pointer transition-all duration-200 border shadow-sm rounded-xl overflow-hidden",
                     selectedElementId === element.id
-                      ? "border-zinc-950 bg-zinc-950 text-white shadow-lg ring-2 ring-zinc-950/10"
+                      ? "border-primary bg-primary text-white shadow-lg ring-2 ring-primary/20"
                       : "border-zinc-100 bg-white hover:border-zinc-300 hover:shadow-md",
                     element.visible === false && "opacity-50 grayscale",
                   )}

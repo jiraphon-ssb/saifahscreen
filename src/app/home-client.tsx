@@ -37,7 +37,7 @@ import {
   howItWorksSteps,
   whySaifahFeatures,
   testimonials,
-} from "@/lib/landing-page-data";
+} from "@/data/landing-page-data";
 import PriceCalculator from "@/components/price-calculator";
 import MiniPriceCalculator from "@/components/mini-price-calculator";
 import SizeChart from "@/components/size-chart";
@@ -48,6 +48,99 @@ const sectionVariants: any = {
   hidden: { opacity: 0, y: 30 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } },
 };
+
+function TestimonialCard({ testimonial }: { testimonial: any }) {
+  const [rotate, setRotate] = React.useState({ x: 0, y: 0 });
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+    const rotateX = (y - centerY) / 10;
+    const rotateY = (centerX - x) / 10;
+    setRotate({ x: rotateX, y: rotateY });
+  };
+
+  const handleMouseLeave = () => {
+    setRotate({ x: 0, y: 0 });
+  };
+
+  return (
+    <motion.div
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      animate={{
+        rotateX: rotate.x,
+        rotateY: rotate.y,
+      }}
+      transition={{ type: "spring", stiffness: 300, damping: 30 }}
+      className="w-[380px] md:w-[450px] group perspective-1000"
+    >
+      <Card className="relative overflow-hidden bg-white/40 backdrop-blur-2xl border-white/50 shadow-[0_8px_32px_0_rgba(31,38,135,0.07)] rounded-[40px] p-8 md:p-10 transition-all duration-500 hover:shadow-[0_20px_80px_rgba(56,189,248,0.15)] group-hover:border-primary/30">
+        {/* Iridescent Border Glow */}
+        <div className="absolute inset-0 rounded-[40px] p-[1px] bg-gradient-to-br from-primary/20 via-purple-500/10 to-pink-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-700 -z-10" />
+        
+        {/* Spotlight Effect */}
+        <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-[radial-gradient(circle_at_var(--mouse-x)_var(--mouse-y),rgba(56,189,248,0.05),transparent_80%)]" 
+             style={{ 
+               // @ts-ignore
+               '--mouse-x': `${rotate.y * -10 + 50}%`, 
+               '--mouse-y': `${rotate.x * 10 + 50}%` 
+             }} 
+        />
+
+        <div className="relative z-10 flex flex-col h-full">
+          <div className="flex justify-between items-start mb-8">
+            <div className="flex gap-1">
+              {[...Array(testimonial.rating)].map((_, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, scale: 0 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: i * 0.1 }}
+                >
+                  <Star className="w-5 h-5 fill-yellow-400 text-yellow-400 drop-shadow-[0_0_8px_rgba(250,204,21,0.4)]" />
+                </motion.div>
+              ))}
+            </div>
+            <div className="bg-primary/10 text-primary py-1 px-3 rounded-full text-[10px] font-black uppercase tracking-widest border border-primary/20 flex items-center gap-1.5 backdrop-blur-md">
+              <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+              Verified Order
+            </div>
+          </div>
+
+          <blockquote className="text-lg md:text-xl font-medium text-foreground tracking-tight leading-relaxed mb-10 italic">
+            "{testimonial.quote}"
+          </blockquote>
+
+          <div className="mt-auto flex items-center gap-4">
+            <div className="relative">
+              <div className="absolute inset-0 bg-gradient-to-br from-primary to-purple-500 blur-md opacity-40 rounded-full" />
+              <div className="relative w-14 h-14 rounded-full bg-gradient-to-br from-primary via-sky-400 to-purple-500 flex items-center justify-center text-white text-xl font-black shadow-lg border-2 border-white">
+                {testimonial.name.replace("คุณ", "").charAt(0)}
+              </div>
+            </div>
+            <div>
+              <p className="font-bold text-lg text-foreground leading-tight">
+                {testimonial.name}
+              </p>
+              <p className="text-sm font-semibold text-muted-foreground/80 uppercase tracking-wider mt-0.5">
+                {testimonial.role || "Customer"}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Decorative Quote Mark */}
+        <div className="absolute top-6 right-8 text-primary/5 text-8xl font-black select-none pointer-events-none group-hover:text-primary/10 transition-colors duration-700">
+          "
+        </div>
+      </Card>
+    </motion.div>
+  );
+}
 
 export default function HomeClient() {
   const careGuideImage = PlaceHolderImages.find(
@@ -275,6 +368,7 @@ export default function HomeClient() {
                       alt={`สกรีนเสื้อด่วน รุ่น ${product.name}`}
                       fill
                       className="object-contain filter drop-shadow-2xl"
+                      sizes="(max-width: 768px) 100vw, 50vw"
                     />
                   </div>
                   <div className="absolute top-6 right-6 z-20">
@@ -431,6 +525,7 @@ export default function HomeClient() {
                     fill
                     className="object-contain"
                     priority
+                    sizes="(max-width: 1024px) 100vw, 40vw"
                   />
                 </div>
               )}
@@ -590,48 +685,50 @@ export default function HomeClient() {
         </div>
       </section>
 
-      {/* TESTIMONIALS */}
-      <section id="testimonials" className="py-20 md:py-32">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-20">
-            <h2 className="text-4xl md:text-6xl font-bold mb-6 tracking-tight drop-shadow-sm">
-              รีวิวสกรีนเสื้อจากลูกค้า
-            </h2>
-            <p className="text-muted-foreground text-xl font-medium">
-              ความไว้วางใจจากลูกค้าคือหัวใจของ SAIFAH
-            </p>
-          </div>
+      {/* TESTIMONIALS - INFINITY GLOW 3.0 */}
+      <section
+        id="testimonials"
+        className="py-24 md:py-40 relative overflow-hidden bg-[#fafafa]"
+      >
+        {/* Animated Mesh Background (Vibrant Electric) */}
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-[radial-gradient(circle_at_20%_30%,rgba(56,189,248,0.15),transparent_50%),radial-gradient(circle_at_80%_70%,rgba(168,85,247,0.15),transparent_50%),radial-gradient(circle_at_50%_50%,rgba(236,72,153,0.1),transparent_70%)] animate-pulse" />
+          <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808008_1px,transparent_1px),linear-gradient(to_bottom,#80808008_1px,transparent_1px)] bg-[size:64px_64px]" />
         </div>
-        <div className="w-full overflow-x-auto [mask-image:linear-gradient(to_right,transparent,black_3rem,black_calc(100%-3rem),transparent)] pb-4">
-          <div className="flex w-max gap-6 px-4 animate-[scroll_30s_linear_infinite]">
-            {[...testimonials, ...testimonials].map((testimonial, index) => (
-              <Card
-                key={`${testimonial.name}-${index}`}
-                className="w-[350px] shrink-0 bg-card hover:shadow-2xl transition-all duration-300 border-border/50 rounded-[32px] cursor-pointer hover:-translate-y-2"
-              >
-                <CardContent className="p-8">
-                  <div className="flex mb-6">
-                    {[...Array(testimonial.rating)].map((_, i) => (
-                      <Star
-                        key={i}
-                        className="w-5 h-5 fill-yellow-400 text-yellow-400 drop-shadow-sm"
-                      />
-                    ))}
-                  </div>
-                  <blockquote className="text-base font-medium text-muted-foreground mb-6 line-clamp-4 leading-relaxed">
-                    "{testimonial.quote}"
-                  </blockquote>
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-sky-400 flex items-center justify-center text-white text-sm font-bold shadow-md">
-                      {testimonial.name.replace("คุณ", "").charAt(0)}
-                    </div>
-                    <p className="text-base font-semibold">
-                      {testimonial.name}
-                    </p>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+
+        <div className="container mx-auto px-4 relative z-10 mb-20 text-center">
+          <AnimateOnScroll delay={100}>
+            <Badge className="mb-6 px-4 py-1.5 rounded-full bg-primary/10 text-primary border-primary/20 backdrop-blur-sm text-xs font-bold tracking-[0.2em] uppercase">
+              What they say
+            </Badge>
+            <h2 className="text-4xl md:text-7xl font-bold tracking-tighter mb-6 text-foreground drop-shadow-sm leading-[1.1]">
+              รีวิวจากลูกค้า<br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-purple-500 to-pink-500">ที่ไว้วางใจเรา</span>
+            </h2>
+            <p className="text-muted-foreground text-xl max-w-2xl mx-auto font-medium">
+              เพราะงานสกรีนด่วนคุณภาพระดับพรีเมียม คือหัวใจที่เราส่งมอบให้ลูกค้ากว่า 5,000+ ราย
+            </p>
+          </AnimateOnScroll>
+        </div>
+
+        {/* Marquee Container */}
+        <div className="space-y-12 relative">
+          {/* Row 1: Left to Right */}
+          <div className="flex w-full overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_15%,black_85%,transparent)]">
+            <div className="flex w-max animate-infinite-scroll gap-8 py-10 px-4">
+              {[...testimonials, ...testimonials].map((t, i) => (
+                <TestimonialCard key={i} testimonial={t} />
+              ))}
+            </div>
+          </div>
+
+          {/* Row 2: Right to Left */}
+          <div className="flex w-full overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_15%,black_85%,transparent)]">
+            <div className="flex w-max animate-infinite-scroll-reverse gap-8 py-10 px-4">
+              {[...testimonials, ...testimonials].map((t, i) => (
+                <TestimonialCard key={i} testimonial={t} />
+              ))}
+            </div>
           </div>
         </div>
       </section>

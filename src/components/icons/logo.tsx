@@ -11,6 +11,7 @@ export default function Logo({ className, ...props }: LogoProps) {
       width={150}
       height={50}
       className={cn(className)}
+      priority
       {...props}
     />
   );

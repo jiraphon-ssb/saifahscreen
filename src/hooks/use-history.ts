@@ -19,10 +19,7 @@ export const useHistory = <T>(initialState: T) => {
             ? (action as (prevState: T) => T)(currentHistoryState)
             : action;
 
-        if (
-          !overwrite &&
-          JSON.stringify(newState) === JSON.stringify(currentHistoryState)
-        ) {
+        if (!overwrite && newState === currentHistoryState) {
           return prevState;
         }
 
