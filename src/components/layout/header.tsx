@@ -59,7 +59,6 @@ const socialLinks = [
 
 const categories = [
   { href: "/portfolio?category=company", label: "เสื้อบริษัท/องค์กร" },
-  { href: "/portfolio?category=organization", label: "เสื้อหน่วยงาน" },
   {
     href: "/portfolio?category=university",
     label: "เสื้อโรงเรียน/มหาวิทยาลัย",
