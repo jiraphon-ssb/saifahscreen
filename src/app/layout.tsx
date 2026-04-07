@@ -8,8 +8,8 @@ import ClientLayout from "@/components/layout/client-layout";
 export const metadata: Metadata = {
   title: {
     default:
-      "SAIFAH Design Studio - สกรีนเสื้อด่วน สกรีนเสื้อ DTF คุณภาพพรีเมียม",
-    template: "%s | SAIFAH Design Studio",
+      "SAIFAH SCREEN - สกรีนเสื้อด่วน สกรีนเสื้อ DTF คุณภาพพรีเมียม",
+    template: "%s | SAIFAH SCREEN",
   },
   description:
     "โรงสกรีนเสื้อคุณภาพสูง ออกแบบเสื้อของคุณเองได้ทันที สกรีนเสื้อด่วน สกรีนเสื้อ DTF ราคาคุ้มค่า เริ่มต้นไม่มีขั้นต่ำ ส่งทั่วประเทศไทย",
@@ -20,15 +20,21 @@ export const metadata: Metadata = {
     "โรงสกรีนเสื้อ",
     "SAIFAH Studio",
     "สกรีนเสื้อคุณภาพ",
+    "SAIFAH SCREEN",
   ],
-  authors: [{ name: "SAIFAH Studio" }],
+  authors: [{ name: "SAIFAH SCREEN" }],
   metadataBase: new URL("https://saifahscreen.com"),
+  icons: {
+    icon: "/images/mini-mainlogo.png",
+    shortcut: "/images/mini-mainlogo.png",
+    apple: "/images/mini-mainlogo.png",
+  },
   openGraph: {
     type: "website",
     locale: "th_TH",
     url: "https://saifahscreen.com",
-    siteName: "SAIFAH Design Studio",
-    title: "SAIFAH Design Studio - สกรีนเสื้อด่วน สกรีนเสื้อ DTF",
+    siteName: "SAIFAH SCREEN",
+    title: "SAIFAH SCREEN - สกรีนเสื้อด่วน สกรีนเสื้อ DTF",
     description:
       "สกรีนเสื้อคุณภาพสูง ออกแบบเสื้อของคุณเอง สกรีนเสื้อด่วน สกรีนเสื้อ DTF ราคาคุ้มค่า",
     images: [
@@ -42,7 +48,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "SAIFAH Design Studio - สกรีนเสื้อด่วน",
+    title: "SAIFAH SCREEN - สกรีนเสื้อด่วน",
     description:
       "สกรีนเสื้อคุณภาพสูง ออกแบบเสื้อของคุณเอง สกรีนเสื้อด่วน สกรีนเสื้อ DTF",
     images: ["/images/carousel-desktop-1.png"],
@@ -68,7 +74,7 @@ export const viewport: Viewport = {
 const jsonLd = {
   "@context": "https://schema.org",
   "@type": "LocalBusiness",
-  name: "SAIFAH Design Studio",
+  name: "SAIFAH SCREEN",
   image: "/images/mainlogo.png",
   "@id": "https://saifahscreen.com",
   url: "https://saifahscreen.com",
