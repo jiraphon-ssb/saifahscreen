@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -20,6 +20,7 @@ import {
   Instagram,
   Youtube,
   Mail,
+  LayoutGrid,
 } from "lucide-react";
 import Logo from "../icons/logo";
 import LineIcon from "../icons/line-icon";
@@ -81,39 +82,32 @@ const moreLinks = [
   { href: "/faq", label: "คำถามที่พบบ่อย" },
 ];
 
-function TopHeader({ isScrolled }: { isScrolled: boolean }) {
+const TOP_BAR_HEIGHT = 36;
+
+function TopHeader() {
   return (
-    <AnimatePresence>
-      {!isScrolled && (
-        <motion.div
-          initial={{ height: 0, opacity: 0 }}
-          animate={{ height: 36, opacity: 1 }}
-          exit={{ height: 0, opacity: 0 }}
-          className="hidden lg:block bg-secondary/50 border-b border-border/30 w-full overflow-hidden"
-        >
-          <div className="container flex items-center justify-between h-9 text-xs text-muted-foreground font-medium">
-            <p className="tracking-wide">
-              SAIFAH: บริการออกแบบและผลิตเสื้อครบวงจร
-            </p>
-            <div className="flex items-center gap-3">
-              {socialLinks.slice(0, 4).map((social) => (
-                <Link
-                  key={social.label}
-                  href={social.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-muted-foreground hover:text-primary transition-colors hover:scale-110"
-                  prefetch={false}
-                >
-                  <social.icon className="h-4 w-4" />
-                  <span className="sr-only">{social.label}</span>
-                </Link>
-              ))}
-            </div>
-          </div>
-        </motion.div>
-      )}
-    </AnimatePresence>
+    <div className="hidden lg:block bg-secondary/50 border-b border-border/30 w-full">
+      <div className="container flex items-center justify-between text-xs text-muted-foreground font-medium" style={{ height: TOP_BAR_HEIGHT }}>
+        <p className="tracking-wide">
+          SAIFAH: บริการออกแบบและผลิตเสื้อครบวงจร
+        </p>
+        <div className="flex items-center gap-3">
+          {socialLinks.slice(0, 4).map((social) => (
+            <Link
+              key={social.label}
+              href={social.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-muted-foreground hover:text-primary transition-colors hover:scale-110"
+              prefetch={false}
+            >
+              <social.icon className="h-4 w-4" />
+              <span className="sr-only">{social.label}</span>
+            </Link>
+          ))}
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -122,10 +116,22 @@ export default function Header() {
   const pathname = usePathname();
 
   useEffect(() => {
+    let ticking = false;
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 10);
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          const scrollY = window.scrollY;
+          setIsScrolled((prev) => {
+            if (!prev && scrollY > 20) return true;
+            if (prev && scrollY < 5) return false;
+            return prev;
+          });
+          ticking = false;
+        });
+        ticking = true;
+      }
     };
-    window.addEventListener("scroll", handleScroll);
+    window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
@@ -134,13 +140,16 @@ export default function Header() {
       initial={{ y: -100 }}
       animate={{ y: 0 }}
       transition={{ duration: 0.5, ease: "easeOut" }}
-      className={`w-full z-50 sticky top-0 transition-all duration-300 ${
+      style={{
+        top: isScrolled ? -TOP_BAR_HEIGHT : 0,
+      }}
+      className={`w-full z-50 sticky transition-[top,background-color,box-shadow] duration-300 ease-in-out ${
         isScrolled
           ? "bg-background/80 backdrop-blur-xl border-b border-border/20 shadow-[0_4px_30px_rgba(0,0,0,0.05)]"
           : "bg-background border-b border-border/30"
       }`}
     >
-      <TopHeader isScrolled={isScrolled} />
+      <TopHeader />
       <div className="container flex h-16 items-center">
         <div className="hidden lg:flex flex-1 items-center justify-between">
           <div className="flex items-center gap-3">
@@ -152,11 +161,12 @@ export default function Header() {
               <DropdownMenuTrigger asChild>
                 <Button
                   size="sm"
-                  variant="ghost"
-                  className="text-sm font-medium gap-1 h-9 px-3 hover:bg-secondary/80 rounded-xl"
+                  variant="outline"
+                  className="text-sm font-semibold gap-1.5 h-9 px-4 rounded-xl border-primary/30 text-primary bg-primary/5 hover:bg-primary/10 hover:border-primary/50 transition-all shadow-sm group"
                 >
+                  <LayoutGrid className="h-3.5 w-3.5 group-hover:scale-110 transition-transform" />
                   หมวดหมู่
-                  <ChevronDown className="h-3 w-3" />
+                  <ChevronDown className="h-3 w-3 opacity-70 group-hover:translate-y-0.5 transition-transform" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent

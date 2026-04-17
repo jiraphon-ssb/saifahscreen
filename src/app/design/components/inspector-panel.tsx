@@ -82,8 +82,9 @@ export default function InspectorPanel({
     selectedElement?.textShadow && selectedElement.textShadow !== "none"
   );
   const shadowParts = hasShadow
-    ? selectedElement!.textShadow!.match(/(-?\d*\.?\d+px)|(#[0-9a-fA-F]+)/g) ||
-      []
+    ? selectedElement!.textShadow!.match(
+        /(-?\d*\.?\d+px)|((?:rgba?|hsla?)\([^\)]+\))|(#[0-9a-fA-F]+)/g,
+      ) || []
     : [];
   const shadowX = shadowParts[0] ? parseFloat(shadowParts[0]) : 2;
   const shadowY = shadowParts[1] ? parseFloat(shadowParts[1]) : 2;
@@ -266,7 +267,7 @@ export default function InspectorPanel({
             <AccordionTrigger className="px-5 py-4 hover:no-underline group">
               <span className="flex items-center gap-3 text-sm font-bold text-primary uppercase tracking-tight">
                 <div className="h-7 w-7 rounded-lg bg-zinc-100 flex items-center justify-center group-data-[state=open]:bg-primary group-data-[state=open]:text-white transition-all">
-                  <Move className="h-3.5 w-3.5" />
+                  <Sliders className="h-3.5 w-3.5" />
                 </div>
                 สไตล์ & เอฟเฟกต์
               </span>

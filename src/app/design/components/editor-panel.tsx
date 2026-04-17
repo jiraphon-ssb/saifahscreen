@@ -12,8 +12,6 @@ import ProductPanel from "./product-panel";
 import AddElementsPanel from "./add-elements-panel";
 import LayersPanel from "./layers-panel";
 import InspectorPanel from "./inspector-panel";
-import OrderPanel from "./order-panel";
-
 interface EditorPanelProps {
   activeTool: ActiveTool;
   setActiveTool: (tool: ActiveTool) => void;

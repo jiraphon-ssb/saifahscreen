@@ -18,16 +18,8 @@ import { getPricePerItem } from "@/lib/pricing";
 export default function MiniPriceCalculator() {
   const [shirtType, setShirtType] = useState<"premium" | "oversize">("premium");
   const [quantity, setQuantity] = useState(1);
-  const [totalPrice, setTotalPrice] = useState<number | null>(null);
 
-  useEffect(() => {
-    if (shirtType && quantity > 0) {
-      const pricePerItem = getPricePerItem(shirtType, quantity);
-      setTotalPrice(pricePerItem * quantity);
-    } else {
-      setTotalPrice(null);
-    }
-  }, [shirtType, quantity]);
+  const totalPrice = shirtType && quantity > 0 ? getPricePerItem(shirtType, quantity) * quantity : null;
 
   return (
     <Card className="flex flex-col lg:flex-row items-center gap-3 p-3 bg-background/80 backdrop-blur-2xl border-white/20 dark:border-white/10 w-[95%] lg:w-auto mx-auto rounded-[32px] lg:rounded-full ring-1 ring-border/50 shadow-none">

@@ -112,7 +112,7 @@ function TestimonialCard({ testimonial }: { testimonial: any }) {
           </div>
 
           <blockquote className="text-lg md:text-xl font-medium text-foreground tracking-tight leading-relaxed mb-10 italic">
-            "{testimonial.quote}"
+            &quot;{testimonial.quote}&quot;
           </blockquote>
 
           <div className="mt-auto flex items-center gap-4">
@@ -135,7 +135,7 @@ function TestimonialCard({ testimonial }: { testimonial: any }) {
 
         {/* Decorative Quote Mark */}
         <div className="absolute top-6 right-8 text-primary/5 text-8xl font-black select-none pointer-events-none group-hover:text-primary/10 transition-colors duration-700">
-          "
+          &quot;
         </div>
       </Card>
     </motion.div>
@@ -660,7 +660,7 @@ export default function HomeClient() {
                         ข้อห้ามสำคัญ
                       </h3>
                       <p className="text-sm font-semibold text-red-600/70 tracking-widest uppercase">
-                        Don't
+                        Don&apos;t
                       </p>
                     </div>
                   </div>

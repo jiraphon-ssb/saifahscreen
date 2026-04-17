@@ -1,275 +1,199 @@
 "use client";
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import * as z from "zod";
-import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Mail, Phone, Facebook, Clock } from "lucide-react";
+import { Mail, Phone, Clock, MapPin, ArrowRight, Smartphone, Facebook } from "lucide-react";
 import LineIcon from "@/components/icons/line-icon";
 import TiktokIcon from "@/components/icons/tiktok-icon";
-import { useToast } from "@/hooks/use-toast";
 import Link from "next/link";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import AnimateOnScroll from "@/components/animate-on-scroll";
 
-// Main component
 export default function ContactPage() {
-  const { toast } = useToast();
-
-  const FormSchema = z.object({
-    firstName: z.string().min(1, "กรุณากรอกชื่อ"),
-    lastName: z.string().min(1, "กรุณากรอกนามสกุล"),
-    phone: z
-      .string()
-      .min(9, "กรุณากรอกเบอร์โทรศัพท์ให้ถูกต้อง")
-      .max(10, "เบอร์โทรศัพท์ไม่ถูกต้อง"),
-    quantity: z.string().min(1, "กรุณาระบุจำนวนโดยประมาณ"),
-    email: z.string().email("รูปแบบอีเมลไม่ถูกต้อง"),
-    message: z.string().optional(),
-  });
-
-  const form = useForm<z.infer<typeof FormSchema>>({
-    resolver: zodResolver(FormSchema),
-    defaultValues: {
-      firstName: "",
-      lastName: "",
-      phone: "",
-      quantity: "",
-      email: "",
-      message: "",
-    },
-  });
-
-  function onSubmit(data: z.infer<typeof FormSchema>) {
-    toast({
-      title: "ส่งข้อความสำเร็จ!",
-      description: "เราได้รับข้อความของคุณแล้ว และจะติดต่อกลับโดยเร็วที่สุด",
-    });
-    form.reset();
-  }
-
   const socialLinks = [
     {
+      name: "LINE Official",
+      description: "สั่งทำเสื้อ / สอบถามราคา",
+      icon: LineIcon,
+      href: "https://lin.ee/gxqYXSY",
+      color: "text-[#00B900]",
+      bg: "bg-[#00B900]/10",
+      border: "border-[#00B900]/20",
+      hover: "hover:bg-[#00B900] hover:text-white border-[#00B900]",
+      buttonText: "เพิ่มเพื่อน LINE",
+    },
+    {
       name: "Facebook",
+      description: "ติดตามผลงาน / รีวิวลูกค้า",
       icon: Facebook,
       href: "https://www.facebook.com/saifahscreen",
+      color: "text-[#0866FF]",
+      bg: "bg-[#0866FF]/10",
+      border: "border-[#0866FF]/20",
+      hover: "hover:bg-[#0866FF] hover:text-white border-[#0866FF]",
+      buttonText: "ไปที่เพจ Facebook",
     },
-    { name: "LINE", icon: LineIcon, href: "https://lin.ee/gxqYXSY" },
     {
       name: "TikTok",
+      description: "ดูหน้างานจริงและเบื้องหลัง",
       icon: TiktokIcon,
       href: "https://www.tiktok.com/@saifahscreen",
+      color: "text-zinc-900 dark:text-zinc-100",
+      bg: "bg-zinc-100 dark:bg-zinc-800",
+      border: "border-zinc-200 dark:border-zinc-700",
+      hover: "hover:bg-zinc-900 hover:text-white dark:hover:bg-white dark:hover:text-black border-zinc-900 dark:border-white",
+      buttonText: "รับชม TikTok",
     },
   ];
 
   return (
-    <div className="bg-gradient-to-b from-background via-secondary/10 to-background min-h-screen relative overflow-hidden">
-      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
+    <div className="bg-gradient-to-b from-background via-secondary/20 to-background min-h-screen relative overflow-hidden pb-32">
+      {/* Decorative Orbs */}
+      <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
       <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
-      <div className="container mx-auto px-4 py-16 md:py-24 space-y-24 relative z-10">
-        {/* System 1: Contact Hub */}
-        <section>
-          <AnimateOnScroll delay={100} className="text-center mb-12">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 text-primary text-sm font-semibold uppercase tracking-widest mb-4">
-              ติดต่อเรา
-            </div>
-            <h1 className="text-4xl md:text-6xl font-bold font-headline tracking-tight drop-shadow-sm mb-4">
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-sky-400">
-                Get in Touch
-              </span>
-            </h1>
-            <p className="mt-3 text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto font-medium">
-              เราพร้อมให้ความช่วยเหลือเสมอ
-              ไม่ว่าจะเป็นคำถามทั่วไปหรือการเริ่มต้นโปรเจกต์ใหม่
-            </p>
-          </AnimateOnScroll>
 
-          <AnimateOnScroll delay={200}>
-            <Tabs defaultValue="message" className="w-full max-w-4xl mx-auto">
-              <TabsList className="grid w-full grid-cols-2">
-                <TabsTrigger value="message">ส่งข้อความ</TabsTrigger>
-                <TabsTrigger value="info">ข้อมูลติดต่อ</TabsTrigger>
-              </TabsList>
-              <TabsContent value="message">
-                <Card className="border-t-0 rounded-t-none bg-card/60 backdrop-blur-xl border-border/50 shadow-2xl overflow-hidden">
-                  <CardContent className="p-8 md:p-12 relative">
-                    <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-[80px]" />
-                    <Form {...form}>
-                      <form
-                        onSubmit={form.handleSubmit(onSubmit)}
-                        className="space-y-6"
-                      >
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                          <FormField
-                            control={form.control}
-                            name="firstName"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel>ชื่อ *</FormLabel>
-                                <FormControl>
-                                  <Input {...field} />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                          <FormField
-                            control={form.control}
-                            name="lastName"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel>นามสกุล *</FormLabel>
-                                <FormControl>
-                                  <Input {...field} />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                        </div>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                          <FormField
-                            control={form.control}
-                            name="phone"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel>เบอร์โทรศัพท์ *</FormLabel>
-                                <FormControl>
-                                  <Input type="tel" {...field} />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                          <FormField
-                            control={form.control}
-                            name="quantity"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel>จำนวนโดยประมาณ *</FormLabel>
-                                <FormControl>
-                                  <Input type="number" {...field} />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                        </div>
-                        <FormField
-                          control={form.control}
-                          name="email"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>อีเมล *</FormLabel>
-                              <FormControl>
-                                <Input type="email" {...field} />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                        <FormField
-                          control={form.control}
-                          name="message"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>ข้อความ</FormLabel>
-                              <FormControl>
-                                <Textarea
-                                  placeholder="ข้อความของคุณ"
-                                  className="min-h-[120px]"
-                                  {...field}
-                                />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                        <Button type="submit" size="lg" className="w-full">
-                          ส่งข้อความ
-                        </Button>
-                      </form>
-                    </Form>
-                  </CardContent>
-                </Card>
-              </TabsContent>
-              <TabsContent value="info">
-                <Card className="border-t-0 rounded-t-none bg-card/60 backdrop-blur-xl border-border/50 shadow-2xl overflow-hidden">
-                  <CardContent className="p-8 md:p-12 space-y-12 relative">
-                    <div className="absolute top-0 left-0 w-64 h-64 bg-primary/5 rounded-full blur-[80px]" />
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center md:text-left relative z-10">
-                      <div className="flex flex-col items-center md:items-start gap-2">
-                        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary mb-2">
-                          <Phone className="h-6 w-6" />
-                        </div>
-                        <h4 className="font-bold text-foreground">โทรศัพท์</h4>
-                        <p className="text-muted-foreground">
-                          093-974-2624 (ส้ม)
-                        </p>
-                        <p className="text-muted-foreground">
-                          093-974-6424 (พิม)
-                        </p>
-                      </div>
-                      <div className="flex flex-col items-center md:items-start gap-2">
-                        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary mb-2">
-                          <Mail className="h-6 w-6" />
-                        </div>
-                        <h4 className="font-bold text-foreground">อีเมล</h4>
-                        <p className="text-muted-foreground">
-                          juntakarn.mkt@gmail.com
-                        </p>
-                      </div>
-                      <div className="flex flex-col items-center md:items-start gap-2">
-                        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary mb-2">
-                          <Clock className="h-6 w-6" />
-                        </div>
-                        <h4 className="font-bold text-foreground">เวลาทำการ</h4>
-                        <p className="text-muted-foreground">
-                          ทุกวันเวลา 8.30 - 21.30 น.
-                        </p>
-                      </div>
+      <div className="container mx-auto px-4 py-16 md:py-24 relative z-10 max-w-6xl">
+        {/* Header Section */}
+        <AnimateOnScroll delay={100} className="text-center mb-16 md:mb-20">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 text-primary text-sm font-bold uppercase tracking-widest mb-6">
+            Contact Us
+          </div>
+          <h1 className="text-4xl md:text-6xl font-black font-headline tracking-tight drop-shadow-sm mb-6">
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-sky-400">
+              ติดต่อสอบถาม
+            </span>
+          </h1>
+          <p className="mt-4 text-lg md:text-xl text-muted-foreground/80 max-w-2xl mx-auto font-medium leading-relaxed">
+            ทีมงาน SAIFAH SCREEN พร้อมให้คำปรึกษาและบริการ<br className="hidden md:block"/>
+            สนใจผลิตเสื้อ สกรีน ปัก ติดต่อได้เลยตามช่องทางด้านล่างครับ
+          </p>
+        </AnimateOnScroll>
+
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12">
+          
+          {/* Left Column: Direct Contacts (7 cols) */}
+          <div className="lg:col-span-7 space-y-6">
+            <AnimateOnScroll delay={200}>
+              <h2 className="text-2xl font-black mb-6 flex items-center gap-3">
+                <div className="p-2 bg-primary/10 rounded-lg text-primary">
+                  <Smartphone className="h-6 w-6" />
+                </div>
+                ช่องทางติดต่อโดยตรง
+              </h2>
+            </AnimateOnScroll>
+
+            {/* Phone */}
+            <AnimateOnScroll delay={300}>
+              <Card className="p-6 md:p-8 border-border/50 bg-card/80 backdrop-blur-xl shadow-lg hover:shadow-xl transition-all group overflow-hidden relative rounded-3xl">
+                <div className="absolute top-0 right-0 w-48 h-48 bg-primary/5 rounded-full blur-3xl -mr-16 -mt-16 transition-all group-hover:bg-primary/20" />
+                <div className="flex flex-col sm:flex-row items-start gap-6 relative z-10">
+                  <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors duration-500">
+                    <Phone className="h-8 w-8" />
+                  </div>
+                  <div className="w-full">
+                    <h3 className="text-2xl font-bold text-foreground mb-1">โทรศัพท์สายด่วน</h3>
+                    <p className="text-muted-foreground font-medium mb-6">ติดต่อฝ่ายขาย ประเมินราคา และปรึกษางานผลิต</p>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full">
+                      <a href="tel:0939742624" className="flex flex-col gap-1 p-4 rounded-2xl bg-secondary/30 hover:bg-primary/10 transition-colors border border-border/50 hover:border-primary/30 group/btn">
+                        <div className="text-sm font-semibold text-muted-foreground group-hover/btn:text-primary transition-colors">ติดต่อ คุณส้ม</div>
+                        <div className="font-mono text-2xl font-black text-foreground">093-974-2624</div>
+                      </a>
+                      <a href="tel:0939746424" className="flex flex-col gap-1 p-4 rounded-2xl bg-secondary/30 hover:bg-primary/10 transition-colors border border-border/50 hover:border-primary/30 group/btn">
+                        <div className="text-sm font-semibold text-muted-foreground group-hover/btn:text-primary transition-colors">ติดต่อ คุณพิม</div>
+                        <div className="font-mono text-2xl font-black text-foreground">093-974-6424</div>
+                      </a>
                     </div>
-                    <div className="pt-8 border-t text-center">
-                      <h4 className="font-bold text-foreground mb-4">
-                        ติดตามเราบน Social Media
-                      </h4>
-                      <div className="flex flex-wrap justify-center gap-4">
-                        {socialLinks.map((link) => (
-                          <Button
-                            key={link.name}
-                            asChild
-                            variant="outline"
-                            size="icon"
-                            className="w-12 h-12 rounded-full transition-all hover:bg-primary/10 hover:text-primary hover:border-primary/50 hover:scale-110"
-                          >
-                            <Link
-                              href={link.href}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                            >
-                              <link.icon className="h-5 w-5" />
-                            </Link>
-                          </Button>
-                        ))}
+                  </div>
+                </div>
+              </Card>
+            </AnimateOnScroll>
+
+             {/* Email */}
+             <AnimateOnScroll delay={400}>
+              <Card className="p-6 md:p-8 border-border/50 bg-card/80 backdrop-blur-xl shadow-lg hover:shadow-xl transition-all group overflow-hidden relative rounded-3xl">
+                <div className="flex flex-col sm:flex-row items-start gap-6 relative z-10">
+                  <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors duration-500">
+                    <Mail className="h-8 w-8" />
+                  </div>
+                  <div>
+                    <h3 className="text-2xl font-bold text-foreground mb-1">อีเมล</h3>
+                    <p className="text-muted-foreground font-medium mb-4">สำหรับการส่งไฟล์งาน ใบเสนอราคา และเอกสาร</p>
+                    <a href="mailto:juntakarn.mkt@gmail.com" className="inline-flex items-center justify-center gap-2 font-semibold text-primary bg-primary/10 hover:bg-primary/20 px-6 py-3 rounded-xl transition-colors w-full sm:w-auto text-lg">
+                      juntakarn.mkt@gmail.com
+                      <ArrowRight className="h-5 w-5" />
+                    </a>
+                  </div>
+                </div>
+              </Card>
+            </AnimateOnScroll>
+            
+            {/* Business Hours */}
+            <AnimateOnScroll delay={500}>
+              <Card className="p-6 md:p-8 border-border/50 bg-card/80 backdrop-blur-xl shadow-lg relative rounded-3xl">
+                 <div className="flex items-center gap-6">
+                  <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-amber-500/10 text-amber-500">
+                    <Clock className="h-8 w-8" />
+                  </div>
+                  <div>
+                    <h3 className="text-2xl font-bold text-foreground mb-1">เวลาทำการ</h3>
+                    <p className="text-muted-foreground font-medium text-lg">เปิดให้บริการทุกวัน <span className="font-bold text-foreground mx-1">08.30 - 21.30 น.</span></p>
+                  </div>
+                </div>
+              </Card>
+            </AnimateOnScroll>
+
+          </div>
+
+          {/* Right Column: Social & Online (5 cols) */}
+          <div className="lg:col-span-5 space-y-6">
+            <AnimateOnScroll delay={300}>
+              <h2 className="text-2xl font-black mb-6 flex items-center gap-3">
+                <div className="p-2 bg-primary/10 rounded-lg text-primary">
+                  <MapPin className="h-6 w-6" />
+                </div>
+                ติดตาม / ออนไลน์
+              </h2>
+            </AnimateOnScroll>
+
+            <div className="grid grid-cols-1 gap-4">
+              {socialLinks.map((social, idx) => (
+                <AnimateOnScroll key={social.name} delay={400 + (idx * 100)}>
+                  <Link href={social.href} target="_blank" rel="noopener noreferrer" className="block outline-none">
+                    <Card className={`p-5 md:p-6 border-2 ${social.border} bg-card/60 backdrop-blur-xl shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col items-center sm:items-start sm:flex-row justify-between gap-5 group cursor-pointer rounded-3xl`}>
+                      <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 text-center sm:text-left w-full">
+                        <div className={`flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl ${social.bg} ${social.color} group-hover:scale-110 transition-transform duration-500`}>
+                          <social.icon className="h-8 w-8" />
+                        </div>
+                        <div className="flex-1">
+                          <h3 className={`text-xl font-bold mb-1 ${social.color}`}>{social.name}</h3>
+                          <p className="text-sm font-medium text-muted-foreground mb-4 sm:mb-0">{social.description}</p>
+                        </div>
+                        <div className={`shrink-0 w-full sm:w-auto px-5 py-2.5 rounded-xl font-bold text-sm transition-all duration-300 ${social.bg} ${social.color} border-2 ${social.hover} flex items-center justify-center gap-1.5`}>
+                          {social.buttonText}
+                          <ArrowRight className="h-4 w-4 opacity-70 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
+                        </div>
                       </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </TabsContent>
-            </Tabs>
-          </AnimateOnScroll>
-        </section>
+                    </Card>
+                  </Link>
+                </AnimateOnScroll>
+              ))}
+            </div>
+            
+            {/* Notice / Pro Tip */}
+            <AnimateOnScroll delay={700}>
+              <div className="mt-8 p-6 md:p-8 rounded-3xl bg-amber-50 dark:bg-amber-950/20 border-2 border-amber-200/50 dark:border-amber-900/50 flex flex-col sm:flex-row gap-5 items-start shadow-sm">
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-amber-100 dark:bg-amber-900/50 text-2xl shadow-sm">
+                  💡
+                </div>
+                <div>
+                  <h4 className="font-bold text-amber-900 dark:text-amber-500 mb-2">แนะนำช่องทางที่ดีที่สุด</h4>
+                  <p className="text-sm text-amber-800 dark:text-amber-400/80 font-medium leading-relaxed">
+                    สำหรับการพูดคุยรายละเอียดงาน ส่งพิกัด หรือส่งไฟล์รูปภาพ แนะนำให้ติดต่อผ่านช่องทาง <strong>LINE Official</strong> จะสะดวกและได้รับการตอบกลับที่รวดเร็วที่สุดครับ
+                  </p>
+                </div>
+              </div>
+            </AnimateOnScroll>
+          </div>
+
+        </div>
       </div>
     </div>
   );

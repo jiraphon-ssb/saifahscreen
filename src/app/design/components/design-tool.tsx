@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback, useEffect } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { X, Undo2, Redo2, Share2 } from "lucide-react";
 import Link from "next/link";
 import { motion } from "framer-motion";
@@ -29,8 +29,17 @@ import { Separator } from "@/components/ui/separator";
 import CanvasArea from "./canvas-area";
 import MainToolbar from "./main-toolbar";
 import EditorPanel from "./editor-panel";
+import ShareDialog from "./share-dialog";
 import LZString from "lz-string";
 import { setIDB, getIDB } from "@/lib/idb";
+
+// Fallback for crypto.randomUUID if not available
+const generateId = () => {
+  if (typeof crypto !== "undefined" && crypto.randomUUID) {
+    return crypto.randomUUID();
+  }
+  return Math.random().toString(36).substring(2, 11);
+};
 
 export type DesignElement = {
   id: string;
@@ -130,7 +139,6 @@ interface DesignToolProps {
 }
 
 export default function DesignTool({ designId }: DesignToolProps) {
-  const router = useRouter();
   const { toast } = useToast();
   const searchParams = useSearchParams();
 
@@ -140,6 +148,7 @@ export default function DesignTool({ designId }: DesignToolProps) {
   const [activeTool, setActiveTool] = useState<ActiveTool>("Product");
   const [isMobilePanelOpen, setMobilePanelOpen] = useState(false);
   const [hideMockup, setHideMockup] = useState(false);
+  const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
 
   const [designState, setDesignState, undo, redo, canUndo, canRedo] =
     useHistory<DesignState>(initialDesignState);
@@ -179,43 +188,13 @@ export default function DesignTool({ designId }: DesignToolProps) {
         }
       }
 
-      // 2. Try loading from IndexedDB (Resume last work)
-      try {
-        const savedData = await getIDB("saifah_auto_save");
-        if (savedData) {
-          const parsed = JSON.parse(savedData);
-          setDesignState({
-            productConfig: parsed.productConfiguration,
-            elements: parsed.designConfiguration,
-            orders: parsed.orders || [],
-          }, true);
-        }
-      } catch (e) {
-        console.error("IDB Load Error:", e);
-      }
+      // 2. Try loading from IndexedDB (Disabled)
     };
 
     loadData();
   }, [searchParams, setDesignState]);
 
-  // Auto-save effect
-  useEffect(() => {
-    const saveWork = async () => {
-      try {
-        const rawData = JSON.stringify({
-          productConfiguration: designState.productConfig,
-          designConfiguration: designState.elements,
-          orders: designState.orders,
-        });
-        await setIDB("saifah_auto_save", rawData);
-      } catch (e) {
-        // Silently fail or log sparingly
-      }
-    };
-    
-    const timeout = setTimeout(saveWork, 1500);
-    return () => clearTimeout(timeout);
-  }, [designState]);
+  // Auto-save effect (Disabled)
 
   const handleToolSelectForMobile = (tool: ActiveTool) => {
     setActiveTool(tool);
@@ -237,7 +216,7 @@ export default function DesignTool({ designId }: DesignToolProps) {
     }
   };
 
-  const handleSetSelectedElement = (id: string | null) => {
+  const handleSetSelectedElement = useCallback((id: string | null) => {
     setSelectedElementId(id);
     if (id) {
       setActiveTool("Inspector");
@@ -249,7 +228,7 @@ export default function DesignTool({ designId }: DesignToolProps) {
         setActiveTool("Layers");
       }
     }
-  };
+  }, [activeTool]);
 
   const setProductConfig = useCallback(
     (config: ProductConfiguration) => {
@@ -285,7 +264,7 @@ export default function DesignTool({ designId }: DesignToolProps) {
       }));
       handleSetSelectedElement(newElement.id);
     },
-    [setDesignState],
+    [setDesignState, handleSetSelectedElement],
   );
 
   const addTextToCanvas = (text: string) => {
@@ -302,28 +281,31 @@ export default function DesignTool({ designId }: DesignToolProps) {
     addElement(newElement);
   };
 
-  const deleteElement = (id: string) => {
+  const deleteElement = useCallback((id: string) => {
     setDesignState((prev) => ({
       ...prev,
       elements: prev.elements.filter((el) => el.id !== id),
     }));
     handleSetSelectedElement(null);
-  };
+  }, [setDesignState, handleSetSelectedElement]);
 
-  const duplicateElement = (id: string) => {
-    const elementToDuplicate = designState.elements.find((el) => el.id === id);
-    if (!elementToDuplicate) return;
+  const duplicateElement = useCallback(
+    (id: string) => {
+      const elementToDuplicate = designState.elements.find((el) => el.id === id);
+      if (!elementToDuplicate) return;
 
-    const newElement: DesignElement = {
-      ...elementToDuplicate,
-      id: `${elementToDuplicate.type}-${crypto.randomUUID()}`,
-      name: `${elementToDuplicate.name} (สำเนา)`,
-      x: elementToDuplicate.x + 20,
-      y: elementToDuplicate.y + 20,
-    };
+      const newElement: DesignElement = {
+        ...elementToDuplicate,
+        id: `${elementToDuplicate.type}-${generateId()}`,
+        name: `${elementToDuplicate.name} (สำเนา)`,
+        x: elementToDuplicate.x + 20,
+        y: elementToDuplicate.y + 20,
+      };
 
-    addElement(newElement);
-  };
+      addElement(newElement);
+    },
+    [designState.elements, addElement]
+  );
 
   const bringToFront = (id: string) => {
     setDesignState((prev) => {
@@ -349,7 +331,7 @@ export default function DesignTool({ designId }: DesignToolProps) {
     imageUrl: string,
   ) => {
     setDesignState((prev) => {
-      const id = `order-${crypto.randomUUID()}`;
+      const id = `order-${generateId()}`;
       const newOrder: OrderItem = {
         id,
         tshirt: { name: colorName, colorValue, imageUrl },
@@ -394,7 +376,7 @@ export default function DesignTool({ designId }: DesignToolProps) {
     props: Partial<DesignElement>,
   ): DesignElement => {
     const base = {
-      id: `${type}-${crypto.randomUUID()}`,
+      id: `${type}-${generateId()}`,
       type: type,
       x: 150,
       y: 150,
@@ -454,18 +436,8 @@ export default function DesignTool({ designId }: DesignToolProps) {
     currentTshirt: designState.productConfig.tshirt,
   };
 
-  const handleShare = async () => {
-    try {
-      const rawData = JSON.stringify({
-        productConfiguration: designState.productConfig,
-        designConfiguration: designState.elements,
-        orders: designState.orders,
-      });
-      await setIDB("saifah_pending_summary", rawData);
-      router.push(`/summary`);
-    } catch (e) {
-      console.error("Failed to save and redirect:", e);
-    }
+  const handleShare = () => {
+    setIsShareDialogOpen(true);
   };
 
   // Keyboard Shortcuts
@@ -502,6 +474,25 @@ export default function DesignTool({ designId }: DesignToolProps) {
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [selectedElementId, deleteElement, undo, redo, duplicateElement]);
+
+  const renderCanvasArea = () => (
+    <CanvasArea
+      elements={designState.elements}
+      imageUrl={designState.productConfig.tshirt.imageUrl}
+      selectedElementId={selectedElementId}
+      setSelectedElementId={handleSetSelectedElement}
+      updateElement={updateElement}
+      deleteElement={deleteElement}
+      duplicateElement={duplicateElement}
+      bringToFront={bringToFront}
+      sendToBack={sendToBack}
+      undo={undo}
+      redo={redo}
+      canUndo={canUndo}
+      canRedo={canRedo}
+      hideMockup={hideMockup}
+    />
+  );
 
   return (
     <TooltipProvider>
@@ -581,30 +572,18 @@ export default function DesignTool({ designId }: DesignToolProps) {
           </div>
         </motion.header>
 
-        <div className="hidden lg:flex flex-row flex-1 h-full min-h-0 bg-secondary/10">
-          <motion.div
-            initial={{ x: -50, opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            transition={{ duration: 0.5 }}
-          >
+        <div className="flex-1 flex overflow-hidden relative">
+          {/* Desktop Toolbar */}
+          <div className="hidden lg:block border-r bg-white z-40">
             <MainToolbar
               activeTool={activeTool}
               setActiveTool={setActiveTool}
               selectedElementId={selectedElementId}
             />
-          </motion.div>
+          </div>
 
-        <motion.aside
-          initial={{ x: -100, opacity: 0 }}
-          animate={{ x: 0, opacity: 1 }}
-          transition={{
-            duration: 0.5,
-            delay: 0.1,
-            type: "spring",
-            damping: 20,
-          }}
-          className="flex h-full w-[320px] lg:w-[380px] shrink-0 flex-col border-r border-white/10 glass-panel z-30 overflow-hidden"
-        >
+          {/* Side Panel (Desktop Only or Mobile via Overlay) */}
+          <div className="hidden lg:flex w-[380px] shrink-0 flex-col border-r bg-card z-30">
             <ScrollArea className="flex-1">
               <EditorPanel
                 activeTool={activeTool}
@@ -621,93 +600,69 @@ export default function DesignTool({ designId }: DesignToolProps) {
                 currentTshirt={designState.productConfig.tshirt}
               />
             </ScrollArea>
-          </motion.aside>
+          </div>
 
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.8 }}
-            className="flex-1 relative h-full w-full bg-secondary/5"
+          {/* Main Content Area - ADAPTIVE */}
+          <div className="flex-1 relative flex flex-col min-w-0 bg-secondary/5">
+            <div className="flex-1 relative">
+              {renderCanvasArea()}
+            </div>
+
+            {/* Mobile Footer Toolbar (Visible only on mobile) */}
+            <div className="lg:hidden h-16 border-t bg-white z-40">
+              <MainToolbar
+                activeTool={activeTool}
+                setActiveTool={handleToolSelectForMobile}
+                selectedElementId={selectedElementId}
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Mobile Panel Sheet */}
+        <Sheet open={isMobilePanelOpen} onOpenChange={setMobilePanelOpen}>
+          <SheetContent
+            side="bottom"
+            className="h-[60vh] flex flex-col p-0 rounded-t-[28px] overflow-hidden border-none"
+            onOpenAutoFocus={(e) => e.preventDefault()}
           >
-            <CanvasArea
-              elements={designState.elements}
-              imageUrl={designState.productConfig.tshirt.imageUrl}
-              selectedElementId={selectedElementId}
-              setSelectedElementId={handleSetSelectedElement}
-              updateElement={updateElement}
-              deleteElement={deleteElement}
-              duplicateElement={duplicateElement}
-              bringToFront={bringToFront}
-              sendToBack={sendToBack}
-              undo={undo}
-              redo={redo}
-              canUndo={canUndo}
-              canRedo={canRedo}
-              hideMockup={hideMockup}
-            />
-          </motion.div>
-        </div>
-
-        <div className="flex lg:hidden flex-col flex-1 min-h-0">
-          <CanvasArea
-            elements={designState.elements}
-            imageUrl={designState.productConfig.tshirt.imageUrl}
-            selectedElementId={selectedElementId}
-            setSelectedElementId={handleSetSelectedElement}
-            updateElement={updateElement}
-            deleteElement={deleteElement}
-            duplicateElement={duplicateElement}
-            bringToFront={bringToFront}
-            sendToBack={sendToBack}
-            undo={undo}
-            redo={redo}
-            canUndo={canUndo}
-            canRedo={canRedo}
-            hideMockup={hideMockup}
-          />
-          <MainToolbar
-            activeTool={activeTool}
-            setActiveTool={handleToolSelectForMobile}
-            selectedElementId={selectedElementId}
-          />
-          <Sheet open={isMobilePanelOpen} onOpenChange={setMobilePanelOpen}>
-            <SheetContent
-              side="bottom"
-              className="h-[60vh] flex flex-col p-0 rounded-t-[28px] overflow-hidden border-none"
-              onOpenAutoFocus={(e) => e.preventDefault()}
-            >
-              {/* Drag Handle */}
-              <div className="flex justify-center pt-3 pb-1 shrink-0">
-                <div className="w-10 h-1 rounded-full bg-zinc-300" />
-              </div>
-              <SheetHeader className="px-4 pb-3 border-b flex-shrink-0">
-                <SheetTitle className="text-base font-bold">
-                  {getToolName(activeTool)}
-                </SheetTitle>
-                <SheetDescription className="sr-only">
-                  แก้ไข {getToolName(activeTool)}
-                </SheetDescription>
-              </SheetHeader>
-              <ScrollArea className="flex-1 min-h-0">
-                <EditorPanel
-                  activeTool={activeTool}
-                  setActiveTool={setActiveTool}
-                  config={designState.productConfig}
-                  setConfig={setProductConfig}
-                  onAddImage={addImageToCanvas}
-                  onAddText={addTextToCanvas}
-                  {...commonEditorProps}
-                  orders={designState.orders}
-                  addOrder={addOrder}
-                  removeOrder={removeOrder}
-                  updateOrderSize={updateOrderSize}
-                  currentTshirt={designState.productConfig.tshirt}
-                />
-              </ScrollArea>
-            </SheetContent>
-          </Sheet>
-        </div>
+            <div className="flex justify-center pt-3 pb-1 shrink-0">
+              <div className="w-10 h-1 rounded-full bg-zinc-300" />
+            </div>
+            <SheetHeader className="px-4 pb-3 border-b flex-shrink-0">
+              <SheetTitle className="text-base font-bold">
+                {getToolName(activeTool)}
+              </SheetTitle>
+              <SheetDescription className="sr-only">
+                แก้ไข {getToolName(activeTool)}
+              </SheetDescription>
+            </SheetHeader>
+            <ScrollArea className="flex-1 min-h-0">
+              <EditorPanel
+                activeTool={activeTool}
+                setActiveTool={setActiveTool}
+                config={designState.productConfig}
+                setConfig={setProductConfig}
+                onAddImage={addImageToCanvas}
+                onAddText={addTextToCanvas}
+                {...commonEditorProps}
+                orders={designState.orders}
+                addOrder={addOrder}
+                removeOrder={removeOrder}
+                updateOrderSize={updateOrderSize}
+                currentTshirt={designState.productConfig.tshirt}
+              />
+            </ScrollArea>
+          </SheetContent>
+        </Sheet>
       </div>
+
+      {/* Share Dialog Popup */}
+      <ShareDialog
+        open={isShareDialogOpen}
+        onOpenChange={setIsShareDialogOpen}
+        designState={designState}
+      />
     </TooltipProvider>
   );
 }

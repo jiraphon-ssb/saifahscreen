@@ -128,11 +128,56 @@ export default function DesignPreview({
                 />
               )}
               {element.type === "text" && (
-                <div
-                  className="w-full h-full flex items-center justify-center pointer-events-none select-none"
-                  style={textStyle}
-                >
-                  {element.text}
+                <div className="w-full h-full pointer-events-none select-none">
+                  {element.curve && element.curve !== 0 ? (
+                    <svg
+                      viewBox={`0 0 ${scaledWidth} ${scaledHeight}`}
+                      className="w-full h-full overflow-visible"
+                      style={{
+                        filter:
+                          textStyle.textShadow !== "none"
+                            ? `drop-shadow(${textStyle.textShadow})`
+                            : "none",
+                      }}
+                    >
+                      <defs>
+                        <path
+                          id={`preview-path-${element.id}`}
+                          d={(() => {
+                            const w = scaledWidth as number;
+                            const h = scaledHeight as number;
+                            const c = element.curve || 0;
+                            const bend = (h / 2) * (c / 100);
+                            return `M 0,${h / 2} Q ${w / 2},${h / 2 + bend * 2} ${w},${h / 2}`;
+                          })()}
+                        />
+                      </defs>
+                      <text
+                        fill={element.color}
+                        style={{
+                          fontFamily: textStyle.fontFamily,
+                          fontSize: textStyle.fontSize,
+                          fontWeight: textStyle.fontWeight,
+                          WebkitTextStroke: textStyle.WebkitTextStroke,
+                        }}
+                      >
+                        <textPath
+                          xlinkHref={`#preview-path-${element.id}`}
+                          startOffset="50%"
+                          textAnchor="middle"
+                        >
+                          {element.text}
+                        </textPath>
+                      </text>
+                    </svg>
+                  ) : (
+                    <div
+                      className="w-full h-full flex items-center justify-center"
+                      style={textStyle}
+                    >
+                      {element.text}
+                    </div>
+                  )}
                 </div>
               )}
             </div>
