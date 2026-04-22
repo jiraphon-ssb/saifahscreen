@@ -3,6 +3,7 @@
 import { usePathname } from "next/navigation";
 import Header from "@/components/layout/header";
 import Footer from "@/components/layout/footer";
+import FloatingDock from "@/components/floating-dock";
 
 export default function ClientLayout({
   children,
@@ -17,6 +18,7 @@ export default function ClientLayout({
       {!isDesignPage && <Header />}
       <main className="flex-1 flex flex-col">{children}</main>
       {!isDesignPage && <Footer />}
+      <FloatingDock />
     </>
   );
 }
